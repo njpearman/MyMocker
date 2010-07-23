@@ -26,7 +26,6 @@ class MyMock
     return_values ||= {}
     return_values[:method_name] = @return_value
     create_method(method_name) { return_values[:method_name] }
-    #(class << self; self; end).instance_eval { define_method(method_name) { return_values[:method_name] } }
   end
 
   private
