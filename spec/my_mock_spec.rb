@@ -1,33 +1,4 @@
-class MyMock
-  def initialize
-    @methods = {}
-  end
-
-  def method_missing method_name, *args
-    @methods[method_name] = 0 unless @methods[method_name]
-    @methods[method_name] = @methods[method_name] + 1
-    return nil
-  end
-
-  def has_called? expected_method
-    @methods.keys.any? {|method_name| method_name == expected_method}
-  end
-
-  def call_count method_name
-    @methods[method_name] || 0
-  end
-
-  def returns expected_value
-    @return_value = expected_value
-    return self
-  end
-
-  def from method_name
-    return_values ||= {}
-    return_values[:method_name] = @return_value
-    (class << self; self; end).instance_eval { define_method(method_name) { return_values[:method_name] } }
-  end
-end
+require File.join(File.expand_path(File.dirname(__FILE__)), '..', 'lib', 'my_mock')
 
 describe "mocking a parameter-less method call" do
   before(:each) do
