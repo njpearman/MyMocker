@@ -1,5 +1,24 @@
 require File.join(File.expand_path(File.dirname(__FILE__)), '..', 'lib', 'my_mock')
 
+class Blender
+  def blend thing
+    "It blends!" if thing.blends?
+  end
+end
+
+class Toaster
+  def add food
+    @food = food
+    return self
+  end
+
+  def press_switch
+    @food.toast
+  end
+end
+
+class ToasterMalfunction < Exception; end
+
 describe "mocking a parameter-less method call" do
   before(:each) do
     @my_mock = MyMock.new
@@ -60,5 +79,17 @@ describe "mocking a parameter-less method call" do
     
     @my_mock.mock_method.should == expected_mock_method_result
     @my_mock.other_method.should == expected_other_method_result
+  end
+
+  it "should make a mockery of toasting bread" do
+    @slice_of_bread = MyMock.new
+    Toaster.new.add(@slice_of_bread).press_switch
+    @slice_of_bread.call_count(:toast).should > 0
+  end
+
+  it "should make a mockery of blending toasters" do
+    @toaster = MyMock.new
+    @toaster.returns(true).from(:blends?)
+    Blender.new.blend(@toaster).should == "It blends!"
   end
 end

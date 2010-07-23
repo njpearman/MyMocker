@@ -25,6 +25,12 @@ class MyMock
   def from method_name
     return_values ||= {}
     return_values[:method_name] = @return_value
-    (class << self; self; end).instance_eval { define_method(method_name) { return_values[:method_name] } }
+    create_method(method_name) { return_values[:method_name] }
+    #(class << self; self; end).instance_eval { define_method(method_name) { return_values[:method_name] } }
+  end
+
+  private
+  def create_method method_name, &block
+    (class << self; self; end).instance_eval { define_method method_name, &block } if block_given?
   end
 end
