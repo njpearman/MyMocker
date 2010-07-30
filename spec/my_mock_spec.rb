@@ -35,7 +35,7 @@ class MyMock
   end
   def called? method_name
     raise NotCalled.new method_name unless @method_calls.include? method_name
-    @method_calls.inject(0) {|total, current_method| method_name == current_method ? total += 1 : total }
+    @method_calls.count {|method| method_name == method }
   end
   def method_missing method_name, *args
     super method_name, *args unless args.empty?
