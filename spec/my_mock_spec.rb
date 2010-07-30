@@ -32,7 +32,8 @@ class MyMock
   def should_call method_name
     raise NotCalled.new method_name unless @called == method_name
   end
-  def method_missing method_name
+  def method_missing method_name, *args
+    super method_name, *args unless args.empty?
     @called = method_name
     return nil
   end
@@ -41,7 +42,7 @@ class MyMock
     self
   end
   def from method_name
-    self.class.instance_eval { define_method(method_name) {@return_value}} #"def #{method_name}; #{@return_value}; end"
+    instance_eval { define_method(method_name) { @return_value }}
     #(class << self; self; end).instance_eval { define_method(method_name) { @return_value }}
   end
 end
@@ -106,7 +107,14 @@ describe "mocking a parameter-less method call" do
     @my_mock.mock_method.should == "You're mockin' now!"
   end
 
-  it "should return the expected value from a mock method call" do
+  it "should be able to set any object as the return value from a mock method call" do
+    expected_result = Object.new
+    @my_mock.returns(expected_result).from(:mock_method)
+    result = @my_mock.mock_method
+    result.should equal(expected_result), "Mock method should have returned the expected Object reference, but returned #{result} as a #{result.class} instead."
+  end
+
+  it "should return the expected string from a mock method call" do
     expected_result = "You're mockin' now!"
     @my_mock.returns(expected_result).from(:mock_method)
     result = @my_mock.mock_method
@@ -150,9 +158,19 @@ describe "mocking a parameter-less method call" do
     end
   end
 
+  it "should still bork when a method with arguments is missing" do
+    begin
+      @my_mock.method_missing :not_mocked, 1, 2, 3
+      raise Exception.new
+    rescue NoMethodError
+    rescue
+      fail "You're not there yet; method_missing did not raise a NoMethodError when trying to call with the arguments ':not_mocked,1,2,3'"
+    end
+  end
+
   it "should not bork when a no-argument method is missing" do
     begin
-      @my_mock.method_missing :mocked
+      @my_mock.method_missing :not_mocked
     rescue NoMethodError
       fail "You're not there yet; method_missing thinks it should raise NoMethodError..  :("
     end
