@@ -35,6 +35,7 @@ class MyMock
   end
   def called? method_name
     raise NotCalled.new method_name unless @method_calls.include? method_name
+    @method_calls.inject(0) {|total, current_method| method_name == current_method ? total += 1 : total }
   end
   def method_missing method_name, *args
     super method_name, *args unless args.empty?
@@ -53,6 +54,8 @@ class MyMock
         @method_returns[method_name]
       end
     end
+  end
+  def call_count method_name
   end
 end
 # aaaah, out of the test area
@@ -214,19 +217,15 @@ describe "testing that your new mocking class works" do
 end
 
 describe "mocking a parameterless method a number of times" do
-  it "should track that a method has been called a number of times" do
-    @my_mock.mock_method
-    @my_mock.mock_method
-    @my_mock.mock_method
-    @my_mock.call_count(:mock_method).should == 3
+  before(:each) do
+    @my_mock = MyMock.new
   end
 
-  it "should allow you to check how many times a method has been called" do
-    begin
-      @my_mock.called?(:mock_method).should == 0
-    rescue Exception => e
-      #not so good
-      fail "You're not there yet: #{e.message}"
-    end
+  it "should return the number of tomes that a method has been called from called?" do
+    @my_mock.mock_method
+    @my_mock.mock_method
+    @my_mock.mock_method
+    result = @my_mock.called?(:mock_method)
+    result.should equal(3), "You're not there yet; mock_method was called 3 times, not #{result.nil?? 'nil' : result} times"
   end
 end
