@@ -48,14 +48,13 @@ class MyMock
   end
   def from method_name
     @method_returns[method_name] = @return_value
+    @return_value = nil
     self.class.instance_eval do
       define_method(method_name) do
         @method_calls << method_name
         @method_returns[method_name]
       end
     end
-  end
-  def call_count method_name
   end
 end
 # aaaah, out of the test area
@@ -99,6 +98,13 @@ describe "mocking a parameter-less method call" do
     another_mock = MyMock.new
     another_mock.mock_method.should be_nil
     @my_mock.mock_method.should == "You're mockin' now!"
+  end
+
+  it "should only set the return value for one method expectation" do
+    expected_result = "You're mockin' now!"
+    @my_mock.returns(expected_result).from :mock_method
+    @my_mock.from :another_method
+    @my_mock.another_method.should be_nil, "You're not there yet; only mock_method was set up to return [You're mockin' now!], but another_method is also returning this."
   end
 
   it "should be able to set any object as the return value from a mock method call" do
