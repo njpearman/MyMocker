@@ -1,4 +1,4 @@
-sample_solution_path = File.join(File.expand_path(File.dirname(__FILE__)), 'sample_solution.rb')
+sample_solution_path = File.join(File.expand_path(File.dirname(__FILE__)), '..', 'lib', 'my_mock.rb')
 require sample_solution_path if File.exists? sample_solution_path
 
 class Hammer

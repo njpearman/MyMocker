@@ -5,6 +5,11 @@ describe "Getting up and running" do
     @my_mock = MyMock.new
   end
 
+  it "should be able to find the Ruby file" do
+    sample_solution_path = File.join(File.expand_path(File.dirname(__FILE__)), '..', 'lib', 'my_mock.rb')
+    File.exists?(sample_solution_path).should be_true, "Please create lib/my_mock.rb to get things under way."
+  end
+
   it "should be defined as a class!!" do
     defined?(MyMock).should be_true, "MyMock hasn't been defined as a class!"
   end

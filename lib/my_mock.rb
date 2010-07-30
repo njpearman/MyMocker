@@ -1,35 +1,32 @@
-#class MyMock
-#  def initialize
-#    @methods = {}
-#  end
-#
-#  def method_missing method_name, *args
-#    @methods[method_name] = 0 unless @methods[method_name]
-#    @methods[method_name] = @methods[method_name] + 1
-#    return nil
-#  end
-#
-#  def should_call expected_method
-#    raise NotCalled.new expected_method unless @methods.keys.any? {|method_name| method_name == expected_method}
-#  end
-#
-#  def call_count method_name
-#    @methods[method_name] || 0
-#  end
-#
-#  def returns expected_value
-#    @return_value = expected_value
-#    return self
-#  end
-#
-#  def from method_name
-#    return_values ||= {}
-#    return_values[:method_name] = @return_value
-#    create_method(method_name) { return_values[:method_name] }
-#  end
-#
-#  private
-#  def create_method method_name, &block
-#    (class << self; self; end).instance_eval { define_method method_name, &block } if block_given?
-#  end
-#end
+class MyMock
+  def initialize
+    @method_returns, @method_calls = {}, []
+  end
+
+  def called? method_name
+    raise NotCalled.new method_name unless @method_calls.include? method_name
+    @method_calls.count {|method| method_name == method }
+  end
+
+  def method_missing method_name, *args
+    super method_name, *args unless args.empty?
+    @method_calls << method_name
+    return nil
+  end
+
+  def returns return_value
+    @return_value = return_value
+    self
+  end
+
+  def from method_name
+    @method_returns[method_name] = @return_value
+    @return_value = nil
+    self.class.instance_eval do
+      define_method(method_name) do
+        @method_calls << method_name
+        @method_returns[method_name]
+      end
+    end
+  end
+end
