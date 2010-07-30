@@ -65,23 +65,13 @@ class MyMock
 end
 # aaaah, out of the test area
 
-describe "mocking a parameter-less method call" do
+describe "Getting up and running" do
   before(:each) do
     @my_mock = MyMock.new
   end
 
   it "should be defined as a class!!" do
     defined?(MyMock).should be_true, "MyMock hasn't been defined as a class!"
-  end
-
-  it "should track method calls within individual mock instances" do
-    @my_mock.mock_method
-    another_mock = MyMock.new
-    begin
-      another_mock.called?(:mock_method)
-      fail "You're not there yet; mock_method was only called on one instance of MyMock."
-    rescue NotCalled
-    end
   end
 
   it "should tell you that a method wasn't called, if you ask" do
@@ -114,6 +104,16 @@ describe "mocking a parameter-less method call" do
     end
   end
 
+  it "should only return nil from missing_method" do
+    @my_mock.mock_method.should be_nil
+  end
+end
+
+describe "mocking a parameter-less method call" do
+  before(:each) do
+    @my_mock = MyMock.new
+  end
+
   it "should not complain if a method has been called" do
     @my_mock.mock_method
     begin
@@ -138,8 +138,20 @@ describe "mocking a parameter-less method call" do
     end
   end
 
-  it "should only return nil from missing_method" do
-    @my_mock.mock_method.should be_nil
+  it "should track method calls within individual mock instances" do
+    @my_mock.mock_method
+    another_mock = MyMock.new
+    begin
+      another_mock.called?(:mock_method)
+      fail "You're not there yet; mock_method was only called on one instance of MyMock."
+    rescue NotCalled
+    end
+  end
+end
+
+describe "mocking the return value for a parameter-less method call" do
+  before(:each) do
+    @my_mock = MyMock.new
   end
 
   it "should let you set an expected return value" do
@@ -214,6 +226,20 @@ describe "mocking a parameter-less method call" do
   end
 end
 
+describe "mocking a parameterless method a number of times" do
+  before(:each) do
+    @my_mock = MyMock.new
+  end
+
+  it "should return the number of times that a method has been called from called?" do
+    @my_mock.mock_method
+    @my_mock.mock_method
+    @my_mock.mock_method
+    result = @my_mock.called?(:mock_method)
+    result.should equal(3), "You're not there yet; mock_method was called 3 times, not #{result.nil?? 'nil' : result} times"
+  end
+end
+
 describe "testing that your new mocking class works" do
   it "should make a mockery of toasting bread" do
     @slice_of_bread = MyMock.new
@@ -232,19 +258,5 @@ describe "testing that your new mocking class works" do
     @hammer = Hammer.new
     3.times { @hammer.hit(@nail) }
     @nail.called?(:hit).should == 3
-  end
-end
-
-describe "mocking a parameterless method a number of times" do
-  before(:each) do
-    @my_mock = MyMock.new
-  end
-
-  it "should return the number of times that a method has been called from called?" do
-    @my_mock.mock_method
-    @my_mock.mock_method
-    @my_mock.mock_method
-    result = @my_mock.called?(:mock_method)
-    result.should equal(3), "You're not there yet; mock_method was called 3 times, not #{result.nil?? 'nil' : result} times"
   end
 end
