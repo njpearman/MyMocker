@@ -1,5 +1,11 @@
 require File.join(File.expand_path(File.dirname(__FILE__)), '..', 'lib', 'my_mock')
 
+class Hammer
+  def hit thing
+    thing.hit
+  end
+end
+
 class Blender
   def blend thing
     "It blends!" if thing.blends?
@@ -64,22 +70,8 @@ describe "mocking a parameter-less method call" do
     @my_mock = MyMock.new
   end
 
-  it "should let you set expected return values on several methods" do
-    expected_mock_method_result = "You're mockin' now!"
-    @my_mock.returns(expected_mock_method_result).from(:mock_method)
-
-    expected_other_method_result = "Mocking more!"
-    @my_mock.returns(expected_other_method_result).from(:other_method)
-
-    @my_mock.mock_method.should == "You're mockin' now!"
-    @my_mock.other_method.should == "Mocking more!"
-  end
-
-  it "should always return the expected return value" do
-    expected_result = "You're mockin' now!"
-    @my_mock.returns(expected_result).from(:mock_method)
-    @my_mock.mock_method.should == "You're mockin' now!"
-    @my_mock.mock_method.should == "You're mockin' now!"
+  it "should be defined as a class!!" do
+    defined?(MyMock).should be_true, "MyMock hasn't been defined as a class!"
   end
 
   it "should track method calls within individual mock instances" do
@@ -92,61 +84,43 @@ describe "mocking a parameter-less method call" do
     end
   end
 
-  it "should only define the result on the specific mock instance" do
-    expected_result = "You're mockin' now!"
-    @my_mock.returns(expected_result).from(:mock_method)
-    another_mock = MyMock.new
-    another_mock.mock_method.should be_nil
-    @my_mock.mock_method.should == "You're mockin' now!"
-  end
-
-  it "should only set the return value for one method expectation" do
-    expected_result = "You're mockin' now!"
-    @my_mock.returns(expected_result).from :mock_method
-    @my_mock.from :another_method
-    @my_mock.another_method.should be_nil, "You're not there yet; only mock_method was set up to return [You're mockin' now!], but another_method is also returning this."
-  end
-
-  it "should be able to set any object as the return value from a mock method call" do
-    expected_result = Object.new
-    @my_mock.returns(expected_result).from(:mock_method)
-    result = @my_mock.mock_method
-    result.should equal(expected_result), "Mock method should have returned the expected Object reference, but returned #{result} as a #{result.class} instead."
-  end
-
-  it "should return the expected string from a mock method call" do
-    expected_result = "You're mockin' now!"
-    @my_mock.returns(expected_result).from(:mock_method)
-    result = @my_mock.mock_method
-    result.should match("You're mockin' now!"), "Mock method should have returned \"You're mockin' now!\" but returned #{result}."
-  end
-
-  it "should let you set up return values in the style of a 'fluent' thing" do
+  it "should tell you that a method wasn't called, if you ask" do
     begin
-      @my_mock.returns(1).from(:mock_method)
-    rescue
-      fail "MyMock can't chain returns() to from()."
+      @my_mock.called?(:not_called)
+      fail "You're not there yet; Method was not called, but NotCalled(method_name) exception was not raised...."
+    rescue NotCalled
+      # all good
+    rescue Exception => e
+      # not so good
+      fail "You're not there yet; #{e.message}"
     end
   end
 
-  it "should let you set the method that a return value applies to" do
+  it "should not bork when a no-argument method is missing" do
     begin
-      @my_mock.from(:mock_method)
-    rescue
-      fail "from(method_name) has not been defined on MyMock"
+      @my_mock.method_missing :not_mocked
+    rescue NoMethodError
+      fail "You're not there yet; method_missing thinks it should raise NoMethodError..  :("
     end
   end
 
-  it "should let you set an expected return value" do
+  it "should still bork when a method with arguments is missing" do
     begin
-      @my_mock.returns(1)
+      @my_mock.method_missing :not_mocked, 1, 2, 3
+      raise Exception.new
+    rescue NoMethodError
     rescue
-      fail "returns(return_value) is not defined on MyMock"
+      fail "You're not there yet; method_missing did not raise a NoMethodError when trying to call with the arguments ':not_mocked,1,2,3'"
     end
   end
 
-  it "should only return nil from missing_method" do
-    @my_mock.mock_method.should be_nil
+  it "should not complain if a method has been called" do
+    @my_mock.mock_method
+    begin
+      @my_mock.called?(:mock_method)
+    rescue NotCalled => e
+      fail "Should not have raised a NotCalled error...  mock_method was mocked!\n[#{e.message}]"
+    end
   end
 
   it "should not complain if two different methods have been called" do
@@ -164,47 +138,79 @@ describe "mocking a parameter-less method call" do
     end
   end
 
-  it "should not complain if a method has been called" do
-    @my_mock.mock_method
-    begin
-      @my_mock.called?(:mock_method)
-    rescue NotCalled => e
-      fail "Should not have raised a NotCalled error...  mock_method was mocked!\n[#{e.message}]"
-    end
+  it "should only return nil from missing_method" do
+    @my_mock.mock_method.should be_nil
   end
 
-  it "should still bork when a method with arguments is missing" do
+  it "should let you set an expected return value" do
     begin
-      @my_mock.method_missing :not_mocked, 1, 2, 3
-      raise Exception.new
-    rescue NoMethodError
+      @my_mock.returns(1)
     rescue
-      fail "You're not there yet; method_missing did not raise a NoMethodError when trying to call with the arguments ':not_mocked,1,2,3'"
+      fail "returns(return_value) is not defined on MyMock"
     end
   end
 
-  it "should not bork when a no-argument method is missing" do
+  it "should let you set the method that a return value applies to" do
     begin
-      @my_mock.method_missing :not_mocked
-    rescue NoMethodError
-      fail "You're not there yet; method_missing thinks it should raise NoMethodError..  :("
+      @my_mock.from(:mock_method)
+    rescue
+      fail "from(method_name) has not been defined on MyMock"
     end
   end
 
-  it "should tell you that a method wasn't called, if you ask" do
+  it "should let you set up return values in the style of a 'fluent' thing" do
     begin
-      @my_mock.called?(:not_called)
-      fail "You're not there yet; Method was not called, but NotCalled(method_name) exception was not raised...."
-    rescue NotCalled
-      # all good
-    rescue Exception => e
-      # not so good
-      fail "You're not there yet; #{e.message}"
+      @my_mock.returns(1).from(:mock_method)
+    rescue
+      fail "MyMock can't chain returns() to from()."
     end
   end
 
-  it "should be defined as a class!!" do
-    defined?(MyMock).should be_true, "MyMock hasn't been defined as a class!"
+  it "should return the expected string from a mock method call" do
+    expected_result = "You're mockin' now!"
+    @my_mock.returns(expected_result).from(:mock_method)
+    result = @my_mock.mock_method
+    result.should match("You're mockin' now!"), "Mock method should have returned \"You're mockin' now!\" but returned #{result}."
+  end
+
+  it "should be able to set any object as the return value from a mock method call" do
+    expected_result = Object.new
+    @my_mock.returns(expected_result).from(:mock_method)
+    result = @my_mock.mock_method
+    result.should equal(expected_result), "Mock method should have returned the expected Object reference, but returned #{result} as a #{result.class} instead."
+  end
+
+  it "should only set the return value for one method expectation" do
+    expected_result = "You're mockin' now!"
+    @my_mock.returns(expected_result).from :mock_method
+    @my_mock.from :another_method
+    @my_mock.another_method.should be_nil, "You're not there yet; only mock_method was set up to return [You're mockin' now!], but another_method is also returning this."
+  end
+
+  it "should only define the result on the specific mock instance" do
+    expected_result = "You're mockin' now!"
+    @my_mock.returns(expected_result).from(:mock_method)
+    another_mock = MyMock.new
+    another_mock.mock_method.should be_nil
+    @my_mock.mock_method.should == "You're mockin' now!"
+  end
+
+  it "should always return the expected return value" do
+    expected_result = "You're mockin' now!"
+    @my_mock.returns(expected_result).from(:mock_method)
+    @my_mock.mock_method.should == "You're mockin' now!"
+    @my_mock.mock_method.should == "You're mockin' now!"
+  end
+
+  it "should let you set expected return values on several methods" do
+    expected_mock_method_result = "You're mockin' now!"
+    @my_mock.returns(expected_mock_method_result).from(:mock_method)
+
+    expected_other_method_result = "Mocking more!"
+    @my_mock.returns(expected_other_method_result).from(:other_method)
+
+    @my_mock.mock_method.should == "You're mockin' now!"
+    @my_mock.other_method.should == "Mocking more!"
   end
 end
 
@@ -220,6 +226,13 @@ describe "testing that your new mocking class works" do
     @toaster.returns(true).from(:blends?)
     Blender.new.blend(@toaster).should == "It blends!"
   end
+
+  it "should make a mockery of hammering in a nail" do
+    @nail = MyMock.new
+    @hammer = Hammer.new
+    3.times { @hammer.hit(@nail) }
+    @nail.called?(:hit).should == 3
+  end
 end
 
 describe "mocking a parameterless method a number of times" do
@@ -227,7 +240,7 @@ describe "mocking a parameterless method a number of times" do
     @my_mock = MyMock.new
   end
 
-  it "should return the number of tomes that a method has been called from called?" do
+  it "should return the number of times that a method has been called from called?" do
     @my_mock.mock_method
     @my_mock.mock_method
     @my_mock.mock_method
