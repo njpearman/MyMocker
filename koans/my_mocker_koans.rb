@@ -1,6 +1,6 @@
 require File.join(File.expand_path(File.dirname(__FILE__)), 'test_dependencies')
 
-describe "First things first: The koan"do
+describe "First things first:\n-> The koan"do
   koan "should be able to find the mymock.rb file", 1 do
     sample_solution_path = File.join(File.expand_path(File.dirname(__FILE__)), '..', 'lib', 'my_mock.rb')
     File.exists?(sample_solution_path).should be_true, "Please create lib/my_mock.rb to get things under way."
@@ -11,7 +11,7 @@ describe "First things first: The koan"do
   end
 end
 
-describe "The first steps: MyMock instance" do
+describe "The first steps:\n-> MyMock instance" do
   before(:each) do
     @my_mock = MyMock.new
   end
@@ -48,7 +48,7 @@ describe "The first steps: MyMock instance" do
   end
 end if defined? MyMock
 
-describe "mocking a parameter-less method call: MyMock instance" do
+describe "mocking a parameter-less method call:\n-> MyMock instance" do
   before(:each) do
     @my_mock = MyMock.new
   end
@@ -124,7 +124,7 @@ describe "counting the number of method calls: MyMock instance" do
   end
 end if defined? MyMock
 
-describe "mocking the return value for a parameter-less method call: MyMock instance" do
+describe "mocking the return value for a parameter-less method call:\n-> MyMock instance" do
   before(:each) do
     @my_mock = MyMock.new
   end
@@ -194,7 +194,7 @@ describe "mocking the return value for a parameter-less method call: MyMock inst
   end
 end if defined? MyMock
 
-describe "mocking return values for several parameterless methods: MyMock instance" do
+describe "mocking return values for several parameterless methods:\n-> MyMock instance" do
   before(:each) do
     @my_mock = MyMock.new
   end
@@ -218,7 +218,7 @@ describe "mocking return values for several parameterless methods: MyMock instan
   end
 end if defined? MyMock
 
-describe "testing that your new mocking class works: MyMock instance" do
+describe "testing that your new mocking class works:\n-> MyMock instance" do
   koan "should make a mockery of toasting bread", 20 do
     @slice_of_bread = MyMock.new
     Toaster.new.add(@slice_of_bread).press_switch
