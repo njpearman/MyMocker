@@ -19,7 +19,7 @@ describe "The first steps: MyMock instance" do
   koan "should tell you that a method hasn't been called on it, if you ask", 3 do
     begin
       @my_mock.called?(:jump)
-      fail "You're not there yet; 'jump' was not called on the mock, but NotCalled exception was not raised by called?...."
+      fail "'jump' was not called on the mock, but NotCalled exception was not raised by called?...."
     rescue NotCalled
       # all good
     end
@@ -29,7 +29,7 @@ describe "The first steps: MyMock instance" do
     begin
       @my_mock.method_missing :not_mocked
     rescue NoMethodError
-      fail "You're not there yet; method_missing thinks it should raise NoMethodError..  :("
+      fail "method_missing thinks it should raise NoMethodError..  :("
     end
   end
 
@@ -39,7 +39,7 @@ describe "The first steps: MyMock instance" do
       raise Exception.new
     rescue NoMethodError
     rescue
-      fail "You're not there yet; method_missing did not raise a NoMethodError when trying to call with the arguments ':not_mocked,1,2,3'"
+      fail "method_missing did not raise a NoMethodError when trying to call with the arguments ':not_mocked,1,2,3'"
     end
   end
 
@@ -77,16 +77,25 @@ describe "mocking a parameter-less method call: MyMock instance" do
     end
   end
 
+  koan "should only indicate that a particular method has been called", 1 do
+    @my_mock.another_method
+    begin
+      @my_mock.called?(:mock_method)
+      fail "You asked whether mock_method was called; it was not, but another_method was."
+    rescue NotCalled
+      # as expected
+    end
+  end
+  
   koan "should track method calls within individual mock instances", 9 do
     @my_mock.mock_method
     another_mock = MyMock.new
     begin
       another_mock.called?(:mock_method)
-      fail "You're not there yet; mock_method was only called on one instance of MyMock."
+      fail "mock_method was only called on one instance of MyMock."
     rescue NotCalled
     end
   end
-
 end if defined? MyMock
 
 describe "counting the number of method calls: MyMock instance" do
@@ -99,7 +108,7 @@ describe "counting the number of method calls: MyMock instance" do
     @my_mock.mock_method
     @my_mock.mock_method
     result = @my_mock.called?(:mock_method)
-    result.should equal(3), "You're not there yet; mock_method was called 3 times, not #{result.nil?? 'nil' : result} times"
+    result.should equal(3), "mock_method was called 3 times, not #{result.nil?? 'nil' : result} times"
   end
 
   koan "should return the correct call count for two different methods", 19 do
@@ -110,8 +119,8 @@ describe "counting the number of method calls: MyMock instance" do
     @my_mock.another_method
     first_result = @my_mock.called?(:mock_method)
     second_result = @my_mock.called?(:another_method)
-    first_result.should equal(3), "You're not there yet; mock_method was called 3 times, not #{first_result.nil?? 'nil' : first_result} times.  another_method was also called twice."
-    second_result.should equal(2), "You're not there yet; another_method was called twice, not #{second_result.nil?? 'nil' : second_result} times.  mock_method was also called three times."
+    first_result.should equal(3), "mock_method was called 3 times, not #{first_result.nil?? 'nil' : first_result} times.  another_method was also called twice."
+    second_result.should equal(2), "another_method was called twice, not #{second_result.nil?? 'nil' : second_result} times.  mock_method was also called three times."
   end
 end if defined? MyMock
 
@@ -154,7 +163,7 @@ describe "mocking the return value for a parameter-less method call: MyMock inst
     expected_result = "You're mockin' now!"
     @my_mock.returns(expected_result).from :mock_method
     @my_mock.from :another_method
-    @my_mock.another_method.should be_nil, "You're not there yet; only mock_method was set up to return [You're mockin' now!], but another_method is also returning this."
+    @my_mock.another_method.should be_nil, "only mock_method was set up to return [You're mockin' now!], but another_method is also returning this."
   end
 
   koan "should only define the result on the specific mock instance", 16 do
@@ -163,6 +172,25 @@ describe "mocking the return value for a parameter-less method call: MyMock inst
     another_mock = MyMock.new
     another_mock.mock_method.should be_nil
     @my_mock.mock_method.should == "You're mockin' now!"
+  end
+
+  koan "should still track that a method with a defined return value was called", 1 do
+    @my_mock.returns("You're mockin now!").from(:mock_method)
+    @my_mock.mock_method
+    begin
+      @my_mock.called? :mock_method
+    rescue NotCalled
+      fail "NotCalled should not have been raised, as mock_method was both defined with a return value and called."
+    end
+  end
+
+  koan "should still track the number of times that a method with a defined return value was called", 1 do
+    @my_mock.returns("You're mockin now!").from(:mock_method)
+    @my_mock.mock_method
+    @my_mock.mock_method
+    @my_mock.mock_method
+    count = @my_mock.called? :mock_method
+    count.should equal(3), "mock_method has a return value defined and was called 3 times not #{count.nil?? 'nil' : count} times."
   end
 end if defined? MyMock
 
