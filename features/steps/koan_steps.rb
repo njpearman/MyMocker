@@ -3,6 +3,10 @@ Given /^the file for the mocker exists$/ do
   File.exists?(sample_solution_path).should be_true, "Please create lib/my_mock.rb to get things under way."
 end
 
+Given /^the koan is complete$/ do
+  # nothing to see here.  Move along.
+end
+
 When /^a new MyMock instance is created$/ do
   defined?(MyMock).should be_true, "MyMock hasn't been defined as a class!"
   @my_mock = MyMock.new
@@ -106,7 +110,7 @@ Then /^it should let you specify a method name that a return value will be used 
   @my_mock.from(:mock_method)
 end
 
-Then /^it should let you set up return values in the style of a "([^"]*)" thing$/ do |arg1|
+Then /^it should let you set up return values in the style of a fluent thing$/ do
   begin
     @my_mock.returns(1).from(:mock_method)
   rescue

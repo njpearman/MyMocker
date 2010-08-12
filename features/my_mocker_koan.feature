@@ -14,15 +14,11 @@ Scenario: Your new mocker behaves like this
     And it should only indicate that a particular method has been called
     And it should only return nil from missing_method
     And it should track method calls within individual mock instances
-    And it should make a mockery of toasting bread
-
     And it should return the number of times that a method has been invoked from called?
     And it should return the correct call count for two different methods
-    And it should make a mockery of hammering in a nail
-
     And it should let you set an expected return value
     And it should let you specify a method name that a return value will be used for
-    And it should let you set up return values in the style of a "fluent" thing
+    And it should let you set up return values in the style of a fluent thing
     And it should return the expected string from a mock method call
     And it should be able to set any object as the return value from a mock method call
     And it should only set the return value for one method expectation
@@ -31,4 +27,9 @@ Scenario: Your new mocker behaves like this
     And it should still track the number of times that a method with a defined return value was called
     And it should always return the expected return value
     And it should let you set expected return values on several methods
+
+Scenario: Using MyMock for real
+    Given the koan is complete
+    Then it should make a mockery of toasting bread
+    And it should make a mockery of hammering in a nail
     And it should make a mockery of blending toasters
