@@ -5,7 +5,7 @@ describe "mocking a parameter-less method call" do
     @my_mock = MyMock.new
   end
 
-  it "should not complain if a method has been called" do
+  koan "should not complain if a method has been called", 7 do
     @my_mock.mock_method
     begin
       @my_mock.called?(:mock_method)
@@ -14,7 +14,7 @@ describe "mocking a parameter-less method call" do
     end
   end
 
-  it "should not complain if two different methods have been called" do
+  koan "should not complain if two different methods have been called", 8 do
     @my_mock.mock_method
     @my_mock.another_method
     begin
@@ -29,7 +29,7 @@ describe "mocking a parameter-less method call" do
     end
   end
 
-  it "should track method calls within individual mock instances" do
+  koan "should track method calls within individual mock instances", 9 do
     @my_mock.mock_method
     another_mock = MyMock.new
     begin
@@ -38,4 +38,4 @@ describe "mocking a parameter-less method call" do
     rescue NotCalled
     end
   end
-end
+end if defined? MyMock

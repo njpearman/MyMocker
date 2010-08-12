@@ -5,14 +5,14 @@ describe "mocking a parameterless method a number of times" do
     @my_mock = MyMock.new
   end
 
-  it "should always return the expected return value" do
+  koan "should always return the expected return value", 17 do
     expected_result = "You're mockin' now!"
     @my_mock.returns(expected_result).from(:mock_method)
     @my_mock.mock_method.should == "You're mockin' now!"
     @my_mock.mock_method.should == "You're mockin' now!"
   end
 
-  it "should let you set expected return values on several methods" do
+  koan "should let you set expected return values on several methods", 18 do
     expected_mock_method_result = "You're mockin' now!"
     @my_mock.returns(expected_mock_method_result).from(:mock_method)
 
@@ -23,11 +23,11 @@ describe "mocking a parameterless method a number of times" do
     @my_mock.other_method.should == "Mocking more!"
   end
 
-  it "should return the number of times that a method has been called from called?" do
+  koan "should return the number of times that a method has been called from called?", 19 do
     @my_mock.mock_method
     @my_mock.mock_method
     @my_mock.mock_method
     result = @my_mock.called?(:mock_method)
     result.should equal(3), "You're not there yet; mock_method was called 3 times, not #{result.nil?? 'nil' : result} times"
   end
-end
+end if defined? MyMock
