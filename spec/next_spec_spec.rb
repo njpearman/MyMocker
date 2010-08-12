@@ -1,4 +1,4 @@
-require 'koan_spec'
+require File.join(File.expand_path(File.dirname(__FILE__)), '..', 'lib', 'koan_spec.rb')
 
 describe NextSpec do
   before(:each) do
