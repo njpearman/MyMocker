@@ -30,8 +30,4 @@ class ToasterMalfunction < Exception; end
 
 # This is an exception used by MyMock.  Moved it out of the test bay if you dare
 # use this stuff.
-class NotCalled < Exception
-  def initialize method_name
-    super "#{method_name.to_s} was never called."
-  end
-end
+class NotCalled < Exception; end

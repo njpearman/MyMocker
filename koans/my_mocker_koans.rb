@@ -1,32 +1,31 @@
 require File.join(File.expand_path(File.dirname(__FILE__)), 'test_dependencies')
 
-describe "Getting up and running" do
-  before(:each) do
-    @my_mock = MyMock.new if defined? MyMock
-  end
-
-  koan "should be able to find the Ruby file", 1 do
+describe "First things first: The koan"do
+  koan "should be able to find the mymock.rb file", 1 do
     sample_solution_path = File.join(File.expand_path(File.dirname(__FILE__)), '..', 'lib', 'my_mock.rb')
     File.exists?(sample_solution_path).should be_true, "Please create lib/my_mock.rb to get things under way."
   end
 
-  koan "should be defined as a class!!", 2 do
+  koan "should be able to load the MyMock class", 2 do
     defined?(MyMock).should be_true, "MyMock hasn't been defined as a class!"
   end
+end
 
-  koan "should tell you that a method wasn't called, if you ask", 3 do
+describe "The first steps: MyMock instance" do
+  before(:each) do
+    @my_mock = MyMock.new
+  end
+
+  koan "should tell you that a method hasn't been called on it, if you ask", 3 do
     begin
-      @my_mock.called?(:not_called)
-      fail "You're not there yet; Method was not called, but NotCalled(method_name) exception was not raised...."
+      @my_mock.called?(:jump)
+      fail "You're not there yet; 'jump' was not called on the mock, but NotCalled exception was not raised by called?...."
     rescue NotCalled
       # all good
-    rescue Exception => e
-      # not so good
-      fail "You're not there yet; #{e.message}"
     end
   end
 
-  koan "should not bork when a no-argument method is missing", 4 do
+  koan "should not bork when when a no-argument method is missing", 4 do
     begin
       @my_mock.method_missing :not_mocked
     rescue NoMethodError
@@ -47,14 +46,14 @@ describe "Getting up and running" do
   koan "should only return nil from missing_method", 6 do
     @my_mock.mock_method.should be_nil
   end
-end
+end if defined? MyMock
 
-describe "mocking a parameter-less method call" do
+describe "mocking a parameter-less method call: MyMock instance" do
   before(:each) do
     @my_mock = MyMock.new
   end
 
-  koan "should not complain if a method has been called", 7 do
+  koan "should not complain when asked if a method has been called and the method has been invoked", 7 do
     @my_mock.mock_method
     begin
       @my_mock.called?(:mock_method)
@@ -87,34 +86,53 @@ describe "mocking a parameter-less method call" do
     rescue NotCalled
     end
   end
+
 end if defined? MyMock
 
-describe "mocking the return value for a parameter-less method call" do
+describe "counting the number of method calls: MyMock instance" do
+  before(:each) do
+    @my_mock = MyMock.new
+  end
+
+  koan "should return the number of times that a method has been invoked from called?", 19 do
+    @my_mock.mock_method
+    @my_mock.mock_method
+    @my_mock.mock_method
+    result = @my_mock.called?(:mock_method)
+    result.should equal(3), "You're not there yet; mock_method was called 3 times, not #{result.nil?? 'nil' : result} times"
+  end
+
+  koan "should return the correct call count for two different methods", 19 do
+    @my_mock.mock_method
+    @my_mock.mock_method
+    @my_mock.mock_method
+    @my_mock.another_method
+    @my_mock.another_method
+    first_result = @my_mock.called?(:mock_method)
+    second_result = @my_mock.called?(:another_method)
+    first_result.should equal(3), "You're not there yet; mock_method was called 3 times, not #{first_result.nil?? 'nil' : first_result} times.  another_method was also called twice."
+    second_result.should equal(2), "You're not there yet; another_method was called twice, not #{second_result.nil?? 'nil' : second_result} times.  mock_method was also called three times."
+  end
+end if defined? MyMock
+
+describe "mocking the return value for a parameter-less method call: MyMock instance" do
   before(:each) do
     @my_mock = MyMock.new
   end
 
   koan "should let you set an expected return value", 10 do
-    begin
-      @my_mock.returns(1)
-    rescue
-      fail "returns(return_value) is not defined on MyMock"
-    end
+    @my_mock.returns(1)
   end
 
-  koan "should let you set the method that a return value applies to", 11 do
-    begin
-      @my_mock.from(:mock_method)
-    rescue
-      fail "from(method_name) has not been defined on MyMock"
-    end
+  koan "should let you specify a method name that a return value will be used for", 11 do
+    @my_mock.from(:mock_method)
   end
 
   koan "should let you set up return values in the style of a 'fluent' thing", 12 do
     begin
       @my_mock.returns(1).from(:mock_method)
     rescue
-      fail "MyMock can't chain returns() to from()."
+      fail "MyMock can't chain a from() call to a return() call e.g. my_mock.return(101).from('my_method')."
     end
   end
 
@@ -122,7 +140,7 @@ describe "mocking the return value for a parameter-less method call" do
     expected_result = "You're mockin' now!"
     @my_mock.returns(expected_result).from(:mock_method)
     result = @my_mock.mock_method
-    result.should match("You're mockin' now!"), "Mock method should have returned \"You're mockin' now!\" but returned #{result}."
+    result.should be_eql("You're mockin' now!"), "Mock method should have returned \"You're mockin' now!\" but returned #{result}."
   end
 
   koan "should be able to set any object as the return value from a mock method call", 14 do
@@ -148,7 +166,7 @@ describe "mocking the return value for a parameter-less method call" do
   end
 end if defined? MyMock
 
-describe "mocking a parameterless method a number of times" do
+describe "mocking return values for several parameterless methods: MyMock instance" do
   before(:each) do
     @my_mock = MyMock.new
   end
@@ -170,17 +188,9 @@ describe "mocking a parameterless method a number of times" do
     @my_mock.mock_method.should == "You're mockin' now!"
     @my_mock.other_method.should == "Mocking more!"
   end
-
-  koan "should return the number of times that a method has been called from called?", 19 do
-    @my_mock.mock_method
-    @my_mock.mock_method
-    @my_mock.mock_method
-    result = @my_mock.called?(:mock_method)
-    result.should equal(3), "You're not there yet; mock_method was called 3 times, not #{result.nil?? 'nil' : result} times"
-  end
 end if defined? MyMock
 
-describe "testing that your new mocking class works" do
+describe "testing that your new mocking class works: MyMock instance" do
   koan "should make a mockery of toasting bread", 20 do
     @slice_of_bread = MyMock.new
     Toaster.new.add(@slice_of_bread).press_switch
