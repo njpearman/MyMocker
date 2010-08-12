@@ -11,7 +11,7 @@ end
 Then /^it should tell you that a method has not been called on it, if you ask$/ do
   begin
     @my_mock.called?(:jump)
-    fail "'jump' was not called on the mock, but NotCalled exception was not raised by called?...."
+    fail "'jump' was not invoked on the mock, but NotCalled exception was not raised by called?...."
   rescue NotCalled
     # all good
   end
@@ -21,7 +21,7 @@ Then /^it should not bork when when a no\-argument method is missing$/ do
   begin
     @my_mock.method_missing :not_mocked
   rescue NoMethodError
-    fail "method_missing thinks it should raise NoMethodError..  :("
+    fail "method_missing thinks that it should raise NoMethodError for a non-existent method..  :("
   end
 end
 
@@ -31,7 +31,7 @@ Then /^it should still bork when a method with arguments is missing$/ do
     raise Exception.new
   rescue NoMethodError
   rescue
-    fail "method_missing did not raise a NoMethodError when trying to call with the arguments ':not_mocked,1,2,3'"
+    fail "method_missing did not raise a NoMethodError when trying to call with the arguments ':not_mocked, 1, 2, 3'\n   -> clue 1\n"
   end
 end
 
@@ -44,7 +44,7 @@ Then /^it should not complain when asked if a method has been called and the met
   begin
     @my_mock.called?(:mock_method)
   rescue NotCalled => e
-    fail "Should not have raised a NotCalled error...  mock_method was mocked!\n[#{e.message}]"
+    fail "A NotCalled error should not be raised; mock_method was called on the mock!"
   end
 end
 
@@ -64,10 +64,10 @@ Then /^it should not complain if two different methods have been called$/ do
 end
 
 Then /^it should only indicate that a particular method has been called$/ do
-  @my_mock.another_method
+  @my_mock.particular_method
   begin
-    @my_mock.called?(:mock_method)
-    fail "You asked whether mock_method was called; it was not, but another_method was."
+    @my_mock.called?(:different_method)
+    fail "You asked whether different_method was called; it was not, but particular_method was."
   rescue NotCalled
     # as expected
   end
@@ -84,18 +84,18 @@ Then /^it should track method calls within individual mock instances$/ do
 end
 
 Then /^it should return the number of times that a method has been invoked from called\?$/ do
-  3.times { @my_mock.mock_method }
-  result = @my_mock.called?(:mock_method)
-  result.should equal(3), "mock_method was called 3 times, not #{result.nil?? 'nil' : result} times"
+  3.times { @my_mock.three_times }
+  result = @my_mock.called?(:three_times)
+  result.should equal(3), "three_times was called 3 times, not #{result.nil?? 'nil' : result} times"
 end
 
 Then /^it should return the correct call count for two different methods$/ do
-  3.times { @my_mock.mock_method }
-  2.times { @my_mock.another_method }
-  first_result = @my_mock.called?(:mock_method)
-  second_result = @my_mock.called?(:another_method)
-  first_result.should equal(3), "mock_method was called 3 times, not #{first_result.nil?? 'nil' : first_result} times.  another_method was also called twice."
-  second_result.should equal(2), "another_method was called twice, not #{second_result.nil?? 'nil' : second_result} times.  mock_method was also called three times."
+  4.times { @my_mock.flick }
+  5.times { @my_mock.flack }
+  first_result = @my_mock.called?(:flick)
+  second_result = @my_mock.called?(:flack)
+  first_result.should equal(4), "flick was called four times, not #{first_result.nil?? 'nil' : first_result} times.  flack was also called twice."
+  second_result.should equal(5), "flack was called five times, not #{second_result.nil?? 'nil' : second_result} times.  flick was also called three times."
 end
 
 Then /^it should let you set an expected return value$/ do
@@ -118,7 +118,7 @@ Then /^it should return the expected string from a mock method call$/ do
   expected_result = "You're mockin' now!"
   @my_mock.returns(expected_result).from(:mock_method)
   result = @my_mock.mock_method
-  result.should be_eql("You're mockin' now!"), "Mock method should have returned \"You're mockin' now!\" but returned #{result}."
+  result.should be_eql("You're mockin' now!"), "The mock method should have returned \"You're mockin' now!\" but returned #{result}.\n   -> clue 2\n"
 end
 
 Then /^it should be able to set any object as the return value from a mock method call$/ do
@@ -130,9 +130,9 @@ end
 
 Then /^it should only set the return value for one method expectation$/ do
   expected_result = "You're mockin' now!"
-  @my_mock.returns(expected_result).from :mock_method
-  @my_mock.from :another_method
-  @my_mock.another_method.should be_nil, "only mock_method was set up to return [You're mockin' now!], but another_method is also returning this."
+  @my_mock.returns(expected_result).from :with_result
+  @my_mock.from :without_result
+  @my_mock.without_result.should be_nil, "only with_result was set up to return [You're mockin' now!], but without_result is also returning this."
 end
 
 Then /^it should only define the result on the specific mock instance$/ do
@@ -144,20 +144,20 @@ Then /^it should only define the result on the specific mock instance$/ do
 end
 
 Then /^it should still track that a method with a defined return value was called$/ do
-  @my_mock.returns("You're mockin now!").from(:mock_method)
-  @my_mock.mock_method
+  @my_mock.returns("You're mockin now!").from(:once_with_result)
+  @my_mock.once_with_result
   begin
-    @my_mock.called? :mock_method
+    @my_mock.called? :once_with_result
   rescue NotCalled
-    fail "NotCalled should not have been raised, as mock_method was both defined with a return value and called."
+    fail "NotCalled should not have been raised, as once_with_result was both defined with a return value and called."
   end
 end
 
 Then /^it should still track the number of times that a method with a defined return value was called$/ do
-  @my_mock.returns("You're mockin now!").from(:mock_method)
-  3.times { @my_mock.mock_method }
-  count = @my_mock.called? :mock_method
-  count.should equal(3), "mock_method has a return value defined and was called 3 times not #{count.nil?? 'nil' : count} times."
+  @my_mock.returns("You're mockin now!").from(:three_times_with_result)
+  3.times { @my_mock.three_times_with_result }
+  count = @my_mock.called? :three_times_with_result
+  count.should equal(3), "three_times_with_result has a return value defined and was called 3 times not #{count.nil?? 'nil' : count} times."
 end
 
 Then /^it should always return the expected return value$/ do
