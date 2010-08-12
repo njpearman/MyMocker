@@ -49,3 +49,8 @@ Spec::Rake::SpecTask.new do |t|
   t.spec_files = FileList['spec/**/*.rb']
   t.libs << Dir["lib"]
 end
+
+Spec::Rake::SpecTask.new(:koans) do |t|
+  t.spec_files = FileList['koans/**/*.rb']
+  t.libs << Dir["lib"]
+end
