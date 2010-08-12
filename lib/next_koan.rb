@@ -1,4 +1,4 @@
-class NextSpec
+class NextKoan
   def next_stage
     @run_next = true
   end
@@ -15,7 +15,7 @@ class NextSpec
       @next.next_stage
     end
     def run?
-      @next ||= NextSpec.new
+      @next ||= NextKoan.new
       @next.run?
     end
   end

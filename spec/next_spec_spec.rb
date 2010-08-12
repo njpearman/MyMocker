@@ -1,8 +1,8 @@
-require File.join(File.expand_path(File.dirname(__FILE__)), '..', 'lib', 'koan_spec.rb')
+require File.join(File.expand_path(File.dirname(__FILE__)), '..', 'lib', 'next_koan.rb')
 
-describe NextSpec do
+describe NextKoan do
   before(:each) do
-    @next_spec = NextSpec.new
+    @next_spec = NextKoan.new
   end
 
   it "should run the first run" do

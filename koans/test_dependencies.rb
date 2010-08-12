@@ -1,7 +1,7 @@
 sample_solution_path = File.join(File.expand_path(File.dirname(__FILE__)), '..', 'lib', 'my_mock.rb')
 require sample_solution_path if File.exists? sample_solution_path
 require File.join(File.expand_path(File.dirname(__FILE__)), '..', 'lib', 'rspec_decorator.rb')
-require File.join(File.expand_path(File.dirname(__FILE__)), '..', 'lib', 'koan_spec.rb')
+require File.join(File.expand_path(File.dirname(__FILE__)), '..', 'lib', 'next_koan.rb')
 
 class Hammer
   def hit thing
