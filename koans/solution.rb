@@ -1,3 +1,5 @@
+## This is my 'ideal' solution to the koan.  It's commented out as it currently
+## automatically gets loaded by the koan runner.
 #class MyMock
 #  def initialize
 #    @method_calls = []
