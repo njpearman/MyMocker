@@ -1,6 +1,27 @@
 sample_solution_path = File.join(File.expand_path(File.dirname(__FILE__)), '..', '..', 'lib', 'my_mock.rb')
 require sample_solution_path if File.exists? sample_solution_path
 
+module KoanExpectations
+  def expect_not_called_error failure_message
+    begin
+      yield
+      fail failure_message
+    rescue NotCalled
+      # all good
+    end
+  end
+
+  def expect_no_not_called_error failure_message
+    begin
+      yield
+    rescue NotCalled
+      fail failure_message
+    end
+  end
+end
+
+World(KoanExpectations)
+
 class Hammer
   def hit thing
     thing.hit

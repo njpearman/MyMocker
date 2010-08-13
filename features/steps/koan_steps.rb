@@ -13,12 +13,8 @@ When /^a new MyMock instance is created$/ do
 end
 
 Then /^it should tell you that a method has not been called on it, if you ask$/ do
-  begin
-    @my_mock.called?(:jump)
-    fail "'jump' was not invoked on the mock, but NotCalled exception was not raised by called?...."
-  rescue NotCalled
-    # all good
-  end
+  failure_message = "'jump' was not invoked on the mock, but NotCalled exception was not raised by called?...."
+  expect_not_called_error(failure_message) { @my_mock.called?(:jump) }
 end
 
 Then /^it should not bork when when a no\-argument method is missing$/ do
@@ -45,46 +41,32 @@ end
 
 Then /^it should not complain when asked if a method has been called and the method has been invoked$/ do
   @my_mock.mock_method
-  begin
-    @my_mock.called?(:mock_method)
-  rescue NotCalled => e
-    fail "A NotCalled error should not be raised; mock_method was called on the mock!"
-  end
+  failure_message = "A NotCalled error should not be raised; mock_method was called on the mock!"
+  expect_no_not_called_error(failure_message) { @my_mock.called?(:mock_method) }
 end
 
 Then /^it should not complain if two different methods have been called$/ do
   @my_mock.mock_method
   @my_mock.another_method
-  begin
-    @my_mock.called?(:mock_method)
-  rescue NotCalled => e
-    fail "Should not have raised a NotCalled error...  mock_method was called on the mock!\n[#{e.message}]"
-  end
-  begin
-    @my_mock.called?(:another_method)
-  rescue NotCalled => e
-    fail "Should not have raised a NotCalled error...  another_method was called on the mock!\n[#{e.message}]"
-  end
+
+  failure_message = "Should not have raised a NotCalled error...  mock_method was called on the mock!\n"
+  expect_no_not_called_error(failure_message) { @my_mock.called?(:mock_method) }
+
+  failure_message = "Should not have raised a NotCalled error...  another_method was called on the mock!\n"
+  expect_no_not_called_error(failure_message) { @my_mock.called?(:another_method) }
 end
 
 Then /^it should only indicate that a particular method has been called$/ do
   @my_mock.particular_method
-  begin
-    @my_mock.called?(:different_method)
-    fail "You asked whether different_method was called; it was not, but particular_method was."
-  rescue NotCalled
-    # as expected
-  end
+  failure_message = "You asked whether different_method was called; it was not, but particular_method was."
+  expect_not_called_error(failure_message) { @my_mock.called?(:different_method) }
 end
 
 Then /^it should track method calls within individual mock instances$/ do
   @my_mock.mock_method
   another_mock = MyMock.new
-  begin
-    another_mock.called?(:mock_method)
-    fail "mock_method was only called on one instance of MyMock."
-  rescue NotCalled
-  end
+  failure_message = "mock_method was called on one instance of MyMock, but not another instance."
+  expect_not_called_error(failure_message) { another_mock.called?(:mock_method) }
 end
 
 Then /^it should return the number of times that a method has been invoked from called\?$/ do
@@ -150,11 +132,8 @@ end
 Then /^it should still track that a method with a defined return value was called$/ do
   @my_mock.returns("You're mockin now!").from(:once_with_result)
   @my_mock.once_with_result
-  begin
-    @my_mock.called? :once_with_result
-  rescue NotCalled
-    fail "NotCalled should not have been raised, as once_with_result was both defined with a return value and called."
-  end
+  failure_message = "NotCalled should not have been raised, as once_with_result was both defined with a return value and called."
+  expect_no_not_called_error(failure_message) { @my_mock.called? :once_with_result }
 end
 
 Then /^it should still track the number of times that a method with a defined return value was called$/ do
@@ -182,21 +161,5 @@ Then /^it should let you set expected return values on several methods$/ do
   @my_mock.other_method.should == "Mocking more!"
 end
 
-Then /^it should make a mockery of toasting bread$/ do
-  @slice_of_bread = MyMock.new
-  Toaster.new.add(@slice_of_bread).press_switch
-  @slice_of_bread.called?(:toast)
-end
-
-Then /^it should make a mockery of blending toasters$/ do
-  @toaster = MyMock.new
-  @toaster.returns(true).from(:blends?)
-  Blender.new.blend(@toaster).should == "It blends!"
-end
-
 Then /^it should make a mockery of hammering in a nail$/ do
-  @nail = MyMock.new
-  @hammer = Hammer.new
-  3.times { @hammer.hit(@nail) }
-  @nail.called?(:hit).should == 3
 end

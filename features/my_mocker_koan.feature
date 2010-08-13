@@ -6,6 +6,8 @@ Feature: A koan for creating a very simple mocker
 Scenario: Your new mocker behaves like this
     Given the file for the mocker exists
     When a new MyMock instance is created
+
+
     Then it should tell you that a method has not been called on it, if you ask
     And it should not bork when when a no-argument method is missing
     And it should still bork when a method with arguments is missing
@@ -28,8 +30,21 @@ Scenario: Your new mocker behaves like this
     And it should always return the expected return value
     And it should let you set expected return values on several methods
 
-Scenario: Using MyMock for real
-    Given the koan is complete
-    Then it should make a mockery of toasting bread
-    And it should make a mockery of hammering in a nail
-    And it should make a mockery of blending toasters
+Scenario: Using MyMock to check for an expected dependency call
+    Given the koan is 39 percent complete
+    And I have a mocked slice of bread
+    When I put the bread into a toaster
+    Then the bread should be toasted
+
+Scenario: Using MyMock to check for a number of dependency calls
+    Given the koan is 48 percent complete
+    And I have a mocked nail
+    When I hit the nail with a hammer 3 times
+    Then the nail should have been hit 3 times
+
+Scenario: Using MyMock to check for expected dependency interactions
+    Given the koan is 100 percent complete
+    And I have a toaster
+    And the toaster blends
+    When I put the toaster in a blend
+    Then it should blend
