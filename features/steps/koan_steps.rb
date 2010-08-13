@@ -160,6 +160,3 @@ Then /^it should let you set expected return values on several methods$/ do
   @my_mock.mock_method.should == "You're mockin' now!"
   @my_mock.other_method.should == "Mocking more!"
 end
-
-Then /^it should make a mockery of hammering in a nail$/ do
-end

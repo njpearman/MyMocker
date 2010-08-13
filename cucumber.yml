@@ -1,0 +1,2 @@
+default: --strict --tags @koan
+all: --strict

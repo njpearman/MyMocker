@@ -1,5 +1,6 @@
-Given /^the koan is (\d+) percent complete$/ do |arg1|
-  # hmm... how do I figure this out...?
+Given /^the koan is (\d+) percent complete$/ do |required_completion|
+  koan_progress = KoanProgress.current_progress
+  pending("You need to complete more of the Koan to get this running") if koan_progress < required_completion.to_i
 end
 
 Given /^I have a mocked slice of bread$/ do
@@ -35,11 +36,11 @@ Given /^the toaster blends$/ do
   @toaster.returns(true).from(:blends?)
 end
 
-When /^I put the toaster in a blend$/ do
+When /^I put the toaster in a blender$/ do
   @does_it_blend = Blender.new.blend(@toaster)
 end
 
-Then /^it should blend$/ do
+Then /^it should tell me that it blends$/ do
   @does_it_blend.should == "It blends!"
 end
 

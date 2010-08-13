@@ -3,11 +3,10 @@ Feature: A koan for creating a very simple mocker
     I want a working bit of Ruby code to take away
     In order to show my friends how ace I am
 
+@koan
 Scenario: Your new mocker behaves like this
     Given the file for the mocker exists
     When a new MyMock instance is created
-
-
     Then it should tell you that a method has not been called on it, if you ask
     And it should not bork when when a no-argument method is missing
     And it should still bork when a method with arguments is missing
@@ -46,5 +45,5 @@ Scenario: Using MyMock to check for expected dependency interactions
     Given the koan is 100 percent complete
     And I have a toaster
     And the toaster blends
-    When I put the toaster in a blend
-    Then it should blend
+    When I put the toaster in a blender
+    Then it should tell me that it blends
