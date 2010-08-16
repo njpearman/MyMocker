@@ -1,17 +1,15 @@
 sample_solution_path = File.join(File.expand_path(File.dirname(__FILE__)), '..', '..', 'lib', 'my_mock.rb')
 require sample_solution_path if File.exists? sample_solution_path
 
-class KoanProgress
-  class << self
-    def add_a_test_pass
-      @success_count ||= 0
-      @success_count += 1
-    end
+class KoanTracker
+  def add_a_test_pass
+    @success_count ||= 0
+    @success_count += 1
+  end
 
-    def current_progress
-      @success_count ||= 0
-      (@success_count / 21.0) * 100
-    end
+  def current_progress
+    @success_count ||= 0
+    (@success_count / 21.0) * 100
   end
 end
 
@@ -63,8 +61,20 @@ module KoanExpectations
   end
 end
 
+module KoanProgress
+  def current_progress
+    @koan_tracker ||= KoanTracker.new
+    @koan_tracker.current_progress
+  end
+
+  def add_a_test_pass
+    @koan_tracker ||= KoanTracker.new
+    @koan_tracker.add_a_test_pass
+  end
+end
+
 After('@koan') do |scenario|
-  progress = KoanProgress.current_progress
+  progress = current_progress
   puts "\nKoan progress currently stands at #{("%.2f" % progress)}%"
   if progress == 100
     puts "You are truly enlightened.  Try running rake cukoan:all to see everything fly."
@@ -78,7 +88,8 @@ After('@koan') do |scenario|
 end
 
 AfterStep('@koan') do |scenario|
-  KoanProgress.add_a_test_pass
+  add_a_test_pass
 end
 
 World(KoanExpectations)
+World(KoanProgress)
