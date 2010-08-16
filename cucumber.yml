@@ -1,2 +1,2 @@
-default: --strict --tags @koan
-all: --strict
+default: --format KoanFormatter --strict --tags @koan
+all: --format KoanFormatter --strict

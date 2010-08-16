@@ -10,7 +10,7 @@ class KoanProgress
 
     def current_progress
       @success_count ||= 0
-      (@success_count / 21) * 100
+      (@success_count / 21.0) * 100
     end
   end
 end
@@ -65,14 +65,15 @@ end
 
 After('@koan') do |scenario|
   progress = KoanProgress.current_progress
+  puts "\nKoan progress currently stands at #{("%.2f" % progress)}%"
   if progress == 100
-    puts "\nYou are truly enlightened.  Try running rake cukoan:all to see everything fly."
-  elsif progress > 47
-    puts "\nYou are well on the way to enlightenment.  Try running rake cukoan:all to see more things fly."
+    puts "You are truly enlightened.  Try running rake cukoan:all to see everything fly."
+  elsif progress > 48
+    puts "You are well on the way to enlightenment.  Try running rake cukoan:all to see more things fly."
   elsif progress > 38
-    puts "\nYou are moving towards enlightenment.  Try running rake cukoan:all to see something fly."
+    puts "You are moving towards enlightenment.  Try running rake cukoan:all to see something fly."
   else
-    puts "\nThrough hard work and application, you shall achieve enlightenment."
+    puts "Through hard work and application, you shall achieve enlightenment."
   end
 end
 
