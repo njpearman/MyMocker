@@ -13,7 +13,6 @@ Scenario: Your new mocker behaves like this
     And it should not complain when asked if a method has been called and the method has been invoked
     And it should not complain if two different methods have been called
     And it should only indicate that a particular method has been called
-    And it should only return nil from missing_method
     And it should track method calls within individual mock instances
     And it should return the number of times that a method has been invoked from called?
     And it should return the correct call count for two different methods
@@ -22,6 +21,7 @@ Scenario: Your new mocker behaves like this
     And it should let you set up return values in the style of a fluent thing
     And it should return the expected string from a mock method call
     And it should be able to set any object as the return value from a mock method call
+    And it should return nil from missing_method when no expectations have been set on a method
     And it should only set the return value for one method expectation
     And it should only define the result on the specific mock instance
     And it should still track that a method with a defined return value was called

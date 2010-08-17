@@ -35,7 +35,7 @@ Then /^it should still bork when a method with arguments is missing$/ do
   end
 end
 
-Then /^it should only return nil from missing_method$/ do
+Then /^it should return nil from missing_method when no expectations have been set on a method$/ do
   @my_mock.mock_method.should be_nil
 end
 
