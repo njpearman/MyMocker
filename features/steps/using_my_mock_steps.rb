@@ -1,6 +1,5 @@
 Given /^the koan is (\d+) percent complete$/ do |required_completion|
-  koan_progress = KoanProgress.current_progress
-  pending("You need to complete more of the Koan to get this running") if koan_progress < required_completion.to_i
+  pending("You need to complete more of the Koan to get this running") if current_progress < required_completion.to_i
 end
 
 Given /^I have a mocked slice of bread$/ do
