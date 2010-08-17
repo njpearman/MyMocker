@@ -29,23 +29,24 @@ module KoanExpectations
   end
 end
 
-After('@koan') do |scenario|
-  progress = current_progress
-  puts "\nKoan progress currently stands at #{("%.2f" % progress)}%"
-  if progress == 100
-    puts "You are truly enlightened.  Try running rake cukoan:all to see everything fly."
-  elsif progress > 48
-    puts "You are well on the way to enlightenment.  Try running rake cukoan:all to see more things fly."
-  elsif progress > 38
-    puts "You are moving towards enlightenment.  Try running rake cukoan:all to see something fly."
-  else
-    puts "Through hard work and application, you shall achieve enlightenment."
+class KoanWorld
+  def self.populate world
+    world.After('@koan') do |scenario|
+      progress = current_progress
+      puts "\nKoan progress currently stands at #{("%.2f" % progress)}%"
+      if progress == 100
+        puts "You are truly enlightened.  Try running rake cukoan:all to see everything fly."
+      elsif progress > 48
+        puts "You are well on the way to enlightenment.  Try running rake cukoan:all to see more things fly."
+      elsif progress > 38
+        puts "You are moving towards enlightenment.  Try running rake cukoan:all to see something fly."
+      else
+        puts "Through hard work and application, you shall achieve enlightenment."
+      end
+    end
+
+    world.AfterStep('@koan') {|scenario| add_a_test_pass }
+    world.World(KoanExpectations)
+    world.World(KoanProgress)
   end
 end
-
-AfterStep('@koan') do |scenario|
-  add_a_test_pass
-end
-
-World(KoanExpectations)
-World(KoanProgress)

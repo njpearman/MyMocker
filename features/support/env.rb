@@ -30,3 +30,5 @@ class ToasterMalfunction < Exception; end
 # This is an exception used by MyMock.  Moved it out of the test bay if you dare
 # use this stuff.
 class NotCalled < Exception; end
+
+KoanWorld.populate(self)
