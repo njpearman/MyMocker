@@ -1,6 +1,6 @@
-== MyMockr
+== MyMocker
 
-MyMocker is contains a koan built with Cucumber and some customised formatting that
+MyMocker contains a koan built with Cucumber and some customised formatting that
 goes about stepping you through the process of creating a mocking class.
 
 At the moment, the mocking class can only mock no-argument methods.
