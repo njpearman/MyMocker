@@ -1,3 +1,16 @@
 == MyMockr
 
-You should document your project here.
+MyMocker is contains a koan built with Cucumber and some customised formatting that
+goes about stepping you through the process of creating a mocking class.
+
+At the moment, the mocking class can only mock no-argument methods.
+
+At certain stages through the koan, you get prompted to run the usage features,
+which actually use the class that you have built in "real world" (contrived..?)
+situations.
+
+=== The aim of the game
+The goal is to show a simple use of the method_missing paradigm in Ruby, and
+demonstrate the difference between mocks and stubs.
+
+A bonus goal is to do it in the smallest amount of code possible.
