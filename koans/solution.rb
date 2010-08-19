@@ -2,37 +2,27 @@
 ## automatically gets loaded by the koan runner.
 #class MyMock
 #  def initialize
-#    @method_calls = []
+#    @called_methods, @return_values = [], {}
 #  end
 #
 #  def called? method_name
-#    raise NotCalled.new unless @method_calls.include? method_name
-#    @method_calls.count {|method| method == method_name }
+#    raise NotCalled.new unless @called_methods.include? method_name
+#    @called_methods.count {|method| method == method_name}
 #  end
 #
-#  def method_missing method_name, *args
-#    super method_name, *args unless args.empty?
-#    @method_calls << method_name
-#    return nil
-#  end
-#
-#  def returns value
-#    @value = value
+#  def returns return_value
+#    @return_value = return_value
 #    return self
 #  end
 #
 #  def from method_name
-#    define method_name, @value
-#    @value = nil
+#    @return_values[method_name] = @return_value
+#    @return_value = nil
 #  end
 #
-#  private
-#  def define method_name, return_value
-#    (class<<self;self;end).instance_eval do
-#      define_method(method_name) do
-#        @method_calls << method_name
-#        return return_value
-#      end
-#    end
+#  def method_missing method_name, *args
+#    super method_name, *args unless args.empty?
+#    @called_methods << method_name
+#    return @return_values[method_name]
 #  end
 #end
