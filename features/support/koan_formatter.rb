@@ -18,4 +18,9 @@ class KoanFormatter < Cucumber::Formatter::Pretty
       @koan_failed = ['failed', 'pending'].include? status.to_s
     end
   end
+  
+  def after_features features
+    puts ProgressTracker.progress_message
+    super
+  end
 end

@@ -1,3 +1,31 @@
+class ProgressTracker
+  def self.add_a_test_pass
+    @success_count ||= 0
+    @success_count += 1
+  end
+
+  def self.current_progress
+    @success_count ||= 0
+    (@success_count / 21.0) * 100
+  end
+
+  def self.progress_message
+    progress = current_progress
+
+    message = "\nKoan progress currently stands at #{("%.2f" % progress)}%\n"
+    if progress == 100
+      message << "You are truly enlightened.  Try running rake cukoan:all to see everything fly."
+    elsif progress > 48
+      message << "You are well on the way to enlightenment.  Try running rake cukoan:all to see more things fly."
+    elsif progress > 38
+      message << "You are moving towards enlightenment.  Try running rake cukoan:all to see something fly."
+    else
+      message << "Through hard work and application, you shall achieve enlightenment."
+    end
+    message << "\n\n"
+  end
+end
+
 module KoanProgress
   @@run_next = true
 
@@ -10,17 +38,11 @@ module KoanProgress
   end
 
   def add_a_test_pass
-    @success_count ||= 0
-    @success_count += 1
+    ProgressTracker.add_a_test_pass
   end
 
   def current_progress
-    @success_count ||= 0
-    (@success_count / 21.0) * 100
-  end
-
-  def reset_progress
-    @success_count = 0
+    ProgressTracker.current_progress
   end
 end
 
@@ -50,24 +72,7 @@ class KoanWorld
     end
     
     world.After('@koan') do |scenario|
-      progress = current_progress
-
-      if run_next?
-        puts "\nKoan progress currently stands at #{("%.2f" % progress)}%"
-        run_next_koan = false
-        if progress == 100
-          puts "You are truly enlightened.  Try running rake cukoan:all to see everything fly."
-          run_next_koan = true
-        elsif progress > 48
-          puts "You are well on the way to enlightenment.  Try running rake cukoan:all to see more things fly."
-        elsif progress > 38
-          puts "You are moving towards enlightenment.  Try running rake cukoan:all to see something fly."
-        else
-          puts "Through hard work and application, you shall achieve enlightenment."
-        end
-        reset_progress
-        stop_koans unless run_next_koan
-      end
+      stop_koans if run_next? && scenario.failed?
     end
 
     world.AfterStep('@koan') {|scenario| add_a_test_pass }
