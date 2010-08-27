@@ -7,6 +7,10 @@ Given /^the koan is complete$/ do
   # nothing to see here.  Move along.
 end
 
+Given /^you have already built something that mocks$/ do
+  
+end
+
 When /^a new MyMock instance is created$/ do
   defined?(MyMock).should be_true, "MyMock hasn't been defined as a class!"
   @my_mock = MyMock.new

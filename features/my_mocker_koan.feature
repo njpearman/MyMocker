@@ -4,7 +4,7 @@ Feature: A koan for creating a very simple mocker
     In order to show my friends how ace I am
 
 @koan
-Scenario: Your new mocker behaves like this
+Scenario: You want to build something that mocks
     Given the file for the mocker exists
     When a new MyMock instance is created
     Then it should tell you that a method has not been called on it, if you ask
@@ -16,7 +16,12 @@ Scenario: Your new mocker behaves like this
     And it should track method calls within individual mock instances
     And it should return the number of times that a method has been invoked from called?
     And it should return the correct call count for two different methods
-    And it should let you set an expected return value
+
+@koan
+Scenario: You want to build something that stubs
+    Given you have already built something that mocks
+    When a new MyMock instance is created
+    Then it should let you set an expected return value
     And it should let you specify a method name that a return value will be used for
     And it should let you set up return values in the style of a fluent thing
     And it should return the expected string from a mock method call
