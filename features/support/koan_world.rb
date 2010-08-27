@@ -6,7 +6,7 @@ class ProgressTracker
 
   def self.current_progress
     @success_count ||= 0
-    (@success_count / 21.0) * 100
+    (@success_count / number_of_steps) * 100
   end
 
   def self.progress_message
@@ -23,6 +23,11 @@ class ProgressTracker
       message << "Through hard work and application, you shall achieve enlightenment."
     end
     message << "\n\n"
+  end
+
+  private
+  def self.number_of_steps
+    25.0
   end
 end
 

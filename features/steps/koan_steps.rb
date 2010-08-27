@@ -40,7 +40,7 @@ Then /^it should still bork when a method with arguments is missing$/ do
 end
 
 Then /^it should return nil from missing_method when no expectations have been set on a method$/ do
-  @my_mock.mock_method.should be_nil
+  MyMock.new.mock_method.should be_nil
 end
 
 Then /^it should not complain when asked if a method has been called and the method has been invoked$/ do
