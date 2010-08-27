@@ -1,7 +1,8 @@
 module KoanProgress
+  @@run_next = true
+
   def run_next?
-    @@run_next = true unless defined? @@run_next
-    return @@run_next
+    @@run_next
   end
 
   def stop_koans
