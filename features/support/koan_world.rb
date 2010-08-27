@@ -42,12 +42,8 @@ module KoanProgress
     @@run_next = false
   end
 
-  def add_a_test_pass
-    ProgressTracker.add_a_test_pass
-  end
-
-  def current_progress
-    ProgressTracker.current_progress
+  [:add_a_test_pass, :current_progress].each do |method_name|
+    define_method(method_name) { ProgressTracker.send method_name }
   end
 end
 
