@@ -29,7 +29,13 @@ Scenario: You want to build something that stubs
     And it should return nil from missing_method when no expectations have been set on a method
     And it should only set the return value for one method expectation
     And it should only define the result on the specific mock instance
-    And it should still track that a method with a defined return value was called
+
+@koan
+Scenario: You want to build a consistent interface that can mock and stub
+    Given you have built something simple that both mocks and stubs
+    When a new MyMock instance is created
+    And you are interested in some more mocking
+    Then it should still track that a method with a defined return value was called
     And it should still track the number of times that a method with a defined return value was called
     And it should always return the expected return value
     And it should let you set expected return values on several methods

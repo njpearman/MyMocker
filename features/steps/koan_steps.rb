@@ -4,17 +4,26 @@ Given /^the file for the mocker exists$/ do
 end
 
 Given /^the koan is complete$/ do
-  # nothing to see here.  Move along.
+  # Her name is Yoshimi, she's a black belt in karate
 end
 
 Given /^you have already built something that mocks$/ do
-  
+  # but you won't let those Robots eat me
+end
+
+Given /^you have built something simple that both mocks and stubs$/ do
+  # She's gotta be strong to fight them, cos she's taken lots of vitamins
 end
 
 When /^a new MyMock instance is created$/ do
   defined?(MyMock).should be_true, "MyMock hasn't been defined as a class!"
   @my_mock = MyMock.new
 end
+
+When /^you are interested in some more mocking$/ do
+  # Oh Yoshimi, they don't believe me
+end
+
 
 Then /^it should tell you that a method has not been called on it, if you ask$/ do
   failure_message = "'jump' was not invoked on the mock, but NotCalled exception was not raised by called?...."

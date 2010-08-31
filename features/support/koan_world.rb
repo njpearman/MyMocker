@@ -6,7 +6,7 @@ class ProgressTracker
 
   def self.current_progress
     @success_count ||= 0
-    (@success_count / number_of_steps) * 100
+    (@success_count / NumberOfSteps) * 100
   end
 
   def self.progress_message
@@ -26,9 +26,7 @@ class ProgressTracker
   end
 
   private
-  def self.number_of_steps
-    25.0
-  end
+  NumberOfSteps = 28.0
 end
 
 module KoanProgress
