@@ -31,7 +31,7 @@ Scenario: You want to build something that stubs
     And it should only define the result on the specific mock instance
 
 @koan
-Scenario: You want to build a consistent interface that can mock and stub
+Scenario: You want to build one interface that can mock and stub
     Given you have built something simple that both mocks and stubs
     When a new MyMock instance is created
     And you are interested in some more mocking
