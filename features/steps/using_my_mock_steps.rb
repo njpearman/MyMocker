@@ -1,4 +1,4 @@
-Given /^the koan is (\d+) percent complete$/ do |required_completion|
+Given /^you have completed (?:all|(\d+)) steps in the koan$/ do |required_completion|
   pending("You need to complete more of the Koan to get this running") if current_progress < required_completion.to_i
 end
 

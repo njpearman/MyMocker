@@ -12,7 +12,11 @@ Given /^you have already built something that mocks$/ do
 end
 
 Given /^you have built something simple that both mocks and stubs$/ do
-  # She's gotta be strong to fight them, cos she's taken lots of vitamins
+  # She's gotta be strong to fight them, coz she's taken lots of vitamins
+end
+
+Given /^you are pretty darn good at this shizzle$/ do
+  # Those evil natured robots, they're programmed to destory us
 end
 
 When /^a new MyMock instance is created$/ do
@@ -24,6 +28,10 @@ When /^you are interested in some more mocking$/ do
   # Oh Yoshimi, they don't believe me
 end
 
+
+When /^you have been bored by the triviality of the previous koans$/ do
+  # She's disciplined her body
+end
 
 Then /^it should tell you that a method has not been called on it, if you ask$/ do
   failure_message = "'jump' was not invoked on the mock, but NotCalled exception was not raised by called?...."
@@ -46,6 +54,7 @@ Then /^it should still bork when a method with arguments is missing$/ do
   rescue
     fail "method_missing did not raise a NoMethodError when trying to call with the arguments ':not_mocked, 1, 2, 3'\n   -> clue 1\n"
   end
+
 end
 
 Then /^it should return nil from missing_method when no expectations have been set on a method$/ do
@@ -172,4 +181,42 @@ Then /^it should let you set expected return values on several methods$/ do
 
   @my_mock.mock_method.should == "You're mockin' now!"
   @my_mock.other_method.should == "Mocking more!"
+end
+
+Then /^it should stub "([^"]*)" as an argument$/ do |the_parameter|
+  @my_mock.single_argument(the_parameter)
+  expect_no_not_called_error("single_argument was called with '#{the_parameter}'") { @my_mock.called? :single_argument }
+end
+
+Then /^it should know when a method has unexpectedly been called with an argument$/ do
+  @my_mock.with_an_argument
+  expect_not_called_error("with_an_argument was not called with 'smackdown'") do
+    begin
+      @my_mock.called? :with_an_argument, :with => 'smackdown'
+    rescue ArgumentError => e
+      fail "called? doesn't seem to be accepting the hash ':with => expected_parameter' as a second argument.\n -> #{e.message}"
+    end
+  end
+end
+
+Then /^it should let you mock a return value with "([^"]*)" as an argument$/ do |the_parameter|
+  @my_mock.returns('Back once again').from(:mocked_argument)
+  @my_mock.mocked_argument(the_parameter)
+  call_count = @my_mock.called?(:mocked_argument, :with => the_parameter)
+  call_count.should equal(1), "single_argument was called with '#{the_parameter}, but MyMock doesn't think that it has been."
+end
+
+Then /^it should not set that expectation on "([^"]*)"$/ do |the_parameter|
+  @my_mock.mocked_argument('giggidy')
+  fail_message = "mocked_argument was not called with '#{the_parameter}, but MyMock thinks that it has been..??"
+  expect_not_called_error(fail_message) { @my_mock.called?(:mocked_argument, :with => the_parameter) }
+end
+
+Then /^it should always return the same value for "([^"]*)"$/ do |the_parameter|
+  @my_mock.returns('Back once again').from(:repeat_argument)
+  @my_mock.repeat_argument(the_parameter)
+  @my_mock.repeat_argument(the_parameter)
+  @my_mock.repeat_argument(the_parameter)
+  call_count = @my_mock.called?(:repeat_argument, :with => the_parameter)
+  call_count.should equal(3), "repeat_argument was called three times with '#{the_parameter}, but MyMock thinks that it has been called #{call_count} times."
 end

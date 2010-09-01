@@ -40,20 +40,31 @@ Scenario: You want to build one interface that can mock and stub
     And it should always return the expected return value
     And it should let you set expected return values on several methods
 
+@koan
+Scenario: You want to make an argument about things
+    Given you are pretty darn good at this shizzle
+    When you have been bored by the triviality of the previous koans
+    And a new MyMock instance is created
+    Then it should stub "giggidy" as an argument
+    And it should know when a method has unexpectedly been called with an argument
+    And it should let you mock a return value with "giggidy" as an argument
+    And it should not set that expectation on "thundercats"
+    And it should always return the same value for "giggidy"
+
 Scenario: Using MyMock to check for an expected dependency call
-    Given the koan is 39 percent complete
+    Given you have completed 5 steps in the koan
     And I have a mocked slice of bread
     When I put the bread into a toaster
     Then the bread should be toasted
 
 Scenario: Using MyMock to check for a number of dependency calls
-    Given the koan is 48 percent complete
+    Given you have completed 9 steps in the koan
     And I have a mocked nail
     When I hit the nail with a hammer 3 times
     Then the nail should have been hit 3 times
 
 Scenario: Using MyMock to check for expected dependency interactions
-    Given the koan is 100 percent complete
+    Given you have completed all steps in the koan
     And I have a toaster
     And the toaster blends
     When I put the toaster in a blender

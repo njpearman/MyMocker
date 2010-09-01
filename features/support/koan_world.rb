@@ -13,11 +13,11 @@ class ProgressTracker
     progress = current_progress
 
     message = "\nKoan progress currently stands at #{("%.2f" % progress)}%\n"
-    if progress == 100
+    if @success_count == NumberOfSteps
       message << "You are truly enlightened.  Try running rake cukoan:all to see everything fly."
-    elsif progress > 48
+    elsif progress > 9
       message << "You are well on the way to enlightenment.  Try running rake cukoan:all to see more things fly."
-    elsif progress > 38
+    elsif progress > 5
       message << "You are moving towards enlightenment.  Try running rake cukoan:all to see something fly."
     else
       message << "Through hard work and application, you shall achieve enlightenment."
@@ -26,7 +26,7 @@ class ProgressTracker
   end
 
   private
-  NumberOfSteps = 28.0
+  NumberOfSteps = 36.0
 end
 
 module KoanProgress
