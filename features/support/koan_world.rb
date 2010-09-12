@@ -10,6 +10,7 @@ class ProgressTracker
   end
 
   def self.progress_message
+    @success_count ||= 0
     progress = @success_count
 
     message = "\nKoan progress currently stands at #{("%.2f" % progress)}%\n"
