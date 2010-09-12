@@ -60,11 +60,11 @@ Then /^it should not bork when when a no\-argument method is missing$/ do
   end
 end
 
-Then /^it should still bork when a method with arguments is missing$/ do
-  message = "method_missing did not raise a NoMethodError when trying to call with the arguments ':not_mocked, 1, 2, 3'"
+Then /^it should still bork when a method with one argument is missing$/ do
+  message = "method_missing did not raise a NoMethodError when trying to call with the arguments (:not_mocked, 1)"
   tip = "you can delegate to the super class implementation of a method using 'super' without arguments\n"
   begin
-    @my_mock.method_missing :not_mocked, 1, 2, 3
+    @my_mock.method_missing :not_mocked, 1
     fail display(message, tip)
   rescue NoMethodError
   rescue
