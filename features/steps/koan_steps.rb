@@ -1,6 +1,6 @@
 Given /^the file for the mocker exists$/ do
   sample_solution_path = File.join(File.expand_path(File.dirname(__FILE__)), '..', '..', 'lib', 'my_mock.rb')
-  File.exists?(sample_solution_path).should be_true, "Please create lib/my_mock.rb to get things under way."
+  File.exists?(sample_solution_path).should be_true, display("Please create lib/my_mock.rb to get things under way.")
 end
 
 Given /^the koan is complete$/ do
@@ -20,12 +20,12 @@ Given /^you are pretty darn good at this shizzle$/ do
 end
 
 When /^a new MyMock instance is created$/ do
-  defined?(MyMock).should be_true, "MyMock hasn't been defined as a class.  Put it in the my_mock.rb file."
+  defined?(MyMock).should be_true, display("MyMock hasn't been defined as a class.  Put it in the my_mock.rb file.")
   @my_mock = MyMock.new
 end
 
 When /^MyMock can check if any method has been called$/ do
-  MyMock.instance_methods.include?('called?').should be_true, "called? is not defined as a method on MyMock.\n   -> Tip:  method names can end with a question mark in Ruby."
+  MyMock.instance_methods.include?('called?').should be_true, display("called? is not defined as a method on MyMock.","method names can end with a question mark in Ruby.")
 end
 
 When /^the method that you want to check is given$/ do
@@ -33,7 +33,7 @@ When /^the method that you want to check is given$/ do
     MyMock.new.called? :a_method
   rescue NotCalled
   rescue Exception
-    fail "called? needs to be able to accept a method name as a parameter."
+    fail display("called? needs to be able to accept a method name as a parameter.")
   end
 end
 
@@ -46,28 +46,30 @@ When /^you have been bored by the triviality of the previous koans$/ do
   # She's disciplined her body
 end
 
-Then /^it should tell you that a method has not been called on it, if you ask$/ do
-  failure_message = "called? should have raised a NotCalled error, as the tested method name was not invoked on MyMock...."
-  expect_not_called_error(failure_message) { @my_mock.called?(:jump) }
+Then /^it should tell you that a method has not been called, if you ask$/ do
+  expect_not_called_error("called? should have raised a NotCalled error, as the tested method name was not invoked on MyMock....") do
+    @my_mock.called?(:jump)
+  end
 end
 
 Then /^it should not bork when when a no\-argument method is missing$/ do
   begin
     @my_mock.method_missing :not_mocked
   rescue NoMethodError
-    fail "method_missing thinks that it should raise NoMethodError for a non-existent method..  :(\n (Tip: method_missing is a method defined on all objects.  Try overriding it.)"
+    fail display("method_missing thinks that it should raise NoMethodError for a non-existent method..  :(", "method_missing(method_name, *args) is a method defined on all objects.  Try overriding it.)")
   end
 end
 
 Then /^it should still bork when a method with arguments is missing$/ do
+  message = "method_missing did not raise a NoMethodError when trying to call with the arguments ':not_mocked, 1, 2, 3'"
+  tip = "you can delegate to the super class implementation of a method using 'super' without arguments\n"
   begin
     @my_mock.method_missing :not_mocked, 1, 2, 3
-    raise Exception.new
+    fail display(message, tip)
   rescue NoMethodError
   rescue
-    fail "method_missing did not raise a NoMethodError when trying to call with the arguments ':not_mocked, 1, 2, 3'\n   -> Tip: you can delegate to the super class implementation of a method using 'super', and no arguments are necessary\n"
+    fail display(message, tip)
   end
-
 end
 
 Then /^it should return nil from missing_method when no expectations have been set on a method$/ do
@@ -76,38 +78,44 @@ end
 
 Then /^it should not complain when asked if a method has been called and the method has been invoked$/ do
   @my_mock.mock_method
-  failure_message = "A NotCalled error should not be raised; mock_method was called on the mock!"
-  expect_no_not_called_error(failure_message) { @my_mock.called?(:mock_method) }
+  expect_no_not_called_error("A NotCalled error should not be raised; the method was invoked on the mock instance!", "Let called? know that a non-existent method was called.") do
+    @my_mock.called?(:mock_method)
+  end
 end
 
-Then /^it should not complain if two different methods have been called$/ do
-  @my_mock.mock_method
-  @my_mock.another_method
+Then /^it should store all of the methods that have been called$/ do
+  @my_mock.first_method
+  @my_mock.second_method
 
-  failure_message = "Should not have raised a NotCalled error...  mock_method was called on the mock!\n"
-  expect_no_not_called_error(failure_message) { @my_mock.called?(:mock_method) }
+  begin 
+    @my_mock.called?(:second_method)
+  rescue NotCalled
+  end
 
-  failure_message = "Should not have raised a NotCalled error...  another_method was called on the mock!\n"
-  expect_no_not_called_error(failure_message) { @my_mock.called?(:another_method) }
+  expect_no_not_called_error("A NotCalled error should not have been raised for first_method.  first_method was called on the mock just before second_method was.") do
+    @my_mock.called?(:first_method)
+  end
 end
 
 Then /^it should only indicate that a particular method has been called$/ do
   @my_mock.particular_method
-  failure_message = "You asked whether different_method was called; it was not, but particular_method was."
-  expect_not_called_error(failure_message) { @my_mock.called?(:different_method) }
+  expect_not_called_error("You asked whether different_method was called; it was not, but particular_method was.", "Try recording the name of each method that is caught in method_missing") do
+    @my_mock.called?(:different_method)
+  end
 end
 
 Then /^it should track method calls within individual mock instances$/ do
-  @my_mock.mock_method
+  @my_mock.instance_method
   another_mock = MyMock.new
-  failure_message = "mock_method was called on one instance of MyMock, but not another instance."
-  expect_not_called_error(failure_message) { another_mock.called?(:mock_method) }
+  expect_not_called_error("instance_method was called on one instance of MyMock, but not another instance.", "Method calls should only be tracked as instance variables.") do
+    another_mock.called?(:instance_method)
+  end
 end
 
 Then /^it should return the number of times that a method has been invoked from called\?$/ do
   3.times { @my_mock.three_times }
   result = @my_mock.called?(:three_times)
-  result.should equal(3), "three_times was called 3 times, not #{result.nil?? 'nil' : result} times"
+  result.should equal(3), "called? should be returning the number of times that the method was called on the mock; 'three_times' was called 3 times, not #{result.nil?? 'nil' : result} times"
 end
 
 Then /^it should return the correct call count for two different methods$/ do
@@ -115,8 +123,8 @@ Then /^it should return the correct call count for two different methods$/ do
   5.times { @my_mock.flack }
   first_result = @my_mock.called?(:flick)
   second_result = @my_mock.called?(:flack)
-  first_result.should equal(4), "flick was called four times, not #{first_result.nil?? 'nil' : first_result} times.  flack was also called twice."
-  second_result.should equal(5), "flack was called five times, not #{second_result.nil?? 'nil' : second_result} times.  flick was also called three times."
+  first_result.should equal(4), "flick was called four times, not #{first_result.nil?? 'nil' : first_result} times.  flack was also called five."
+  second_result.should equal(5), "flack was called five times, not #{second_result.nil?? 'nil' : second_result} times.  flick was also called four times."
 end
 
 Then /^it should let you set an expected return value$/ do
@@ -167,8 +175,9 @@ end
 Then /^it should still track that a method with a defined return value was called$/ do
   @my_mock.returns("You're mockin now!").from(:once_with_result)
   @my_mock.once_with_result
-  failure_message = "NotCalled should not have been raised, as once_with_result was both defined with a return value and called."
-  expect_no_not_called_error(failure_message) { @my_mock.called? :once_with_result }
+  expect_no_not_called_error("NotCalled should not have been raised, as once_with_result was both defined with a return value and called.") do
+    @my_mock.called? :once_with_result
+  end
 end
 
 Then /^it should still track the number of times that a method with a defined return value was called$/ do

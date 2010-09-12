@@ -42,4 +42,3 @@ end
 Then /^it should tell me that it blends$/ do
   @does_it_blend.should == "It blends!"
 end
-

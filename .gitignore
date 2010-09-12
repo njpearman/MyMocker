@@ -1,3 +1,4 @@
+**/*.swp
 nbproject
 *.hide
 **/my_mock.rb

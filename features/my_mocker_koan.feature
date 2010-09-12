@@ -9,11 +9,11 @@ Scenario: You want to build something that mocks
     When a new MyMock instance is created
     And MyMock can check if any method has been called
     And the method that you want to check is given
-    Then it should tell you that a method has not been called on it, if you ask
+    Then it should tell you that a method has not been called, if you ask
     And it should not bork when when a no-argument method is missing
     And it should still bork when a method with arguments is missing
     And it should not complain when asked if a method has been called and the method has been invoked
-    And it should not complain if two different methods have been called
+    And it should store all of the methods that have been called
     And it should only indicate that a particular method has been called
     And it should track method calls within individual mock instances
     And it should return the number of times that a method has been invoked from called?

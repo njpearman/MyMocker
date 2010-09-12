@@ -30,6 +30,17 @@ class ProgressTracker
   NumberOfSteps = 38.0
 end
 
+class FailureMessage
+  def initialize message, tip=nil
+    @message, @tip = message, tip
+  end
+  
+  def to_s
+    return @message + "\n   -> Tip: " + @tip if @tip
+    return @message
+  end
+end
+
 module KoanProgress
   @@run_next = true
 
@@ -47,21 +58,25 @@ module KoanProgress
 end
 
 module KoanExpectations
-  def expect_not_called_error failure_message
+  def expect_not_called_error failure_message, tip=nil
     begin
       yield
-      fail failure_message
+      fail display(failure_message, tip)
     rescue NotCalled
       # all good
     end
   end
 
-  def expect_no_not_called_error failure_message
+  def expect_no_not_called_error failure_message, tip=nil
     begin
       yield
     rescue NotCalled
-      fail failure_message
+      fail display(failure_message, tip)
     end
+  end
+
+  def display message, tip=nil
+    FailureMessage.new(message, tip).to_s
   end
 end
 
