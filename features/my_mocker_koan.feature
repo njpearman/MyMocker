@@ -1,12 +1,14 @@
-Feature: A koan for creating a very simple mocker
-    As an eager dev attending Software Craftsmenship 2010
-    I want a working bit of Ruby code to take away
-    In order to show my friends how ace I am
+Feature: A koan for creating a very simple mocking and stubbing tool
+    As an eager dev attending Software Craftsmanship 2010
+    I want a koan that will show me how to make my own test mocker
+    In order to have a cool tool that I built myself
 
 @koan
 Scenario: You want to build something that mocks
     Given the file for the mocker exists
     When a new MyMock instance is created
+    And MyMock can check if any method has been called
+    And the method that you want to check is given
     Then it should tell you that a method has not been called on it, if you ask
     And it should not bork when when a no-argument method is missing
     And it should still bork when a method with arguments is missing

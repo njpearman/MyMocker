@@ -10,7 +10,7 @@ class ProgressTracker
   end
 
   def self.progress_message
-    progress = current_progress
+    progress = @success_count
 
     message = "\nKoan progress currently stands at #{("%.2f" % progress)}%\n"
     if @success_count == NumberOfSteps
@@ -26,7 +26,7 @@ class ProgressTracker
   end
 
   private
-  NumberOfSteps = 36.0
+  NumberOfSteps = 38.0
 end
 
 module KoanProgress

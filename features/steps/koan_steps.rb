@@ -20,8 +20,21 @@ Given /^you are pretty darn good at this shizzle$/ do
 end
 
 When /^a new MyMock instance is created$/ do
-  defined?(MyMock).should be_true, "MyMock hasn't been defined as a class!"
+  defined?(MyMock).should be_true, "MyMock hasn't been defined as a class.  Put it in the my_mock.rb file."
   @my_mock = MyMock.new
+end
+
+When /^MyMock can check if any method has been called$/ do
+  MyMock.instance_methods.include?('called?').should be_true, "called? is not defined as a method on MyMock.\n   -> Tip:  method names can end with a question mark in Ruby."
+end
+
+When /^the method that you want to check is given$/ do
+  begin
+    MyMock.new.called? :a_method
+  rescue NotCalled
+  rescue Exception
+    fail "called? needs to be able to accept a method name as a parameter."
+  end
 end
 
 When /^you are interested in some more mocking$/ do
@@ -34,7 +47,7 @@ When /^you have been bored by the triviality of the previous koans$/ do
 end
 
 Then /^it should tell you that a method has not been called on it, if you ask$/ do
-  failure_message = "'jump' was not invoked on the mock, but NotCalled exception was not raised by called?...."
+  failure_message = "called? should have raised a NotCalled error, as the tested method name was not invoked on MyMock...."
   expect_not_called_error(failure_message) { @my_mock.called?(:jump) }
 end
 
@@ -42,7 +55,7 @@ Then /^it should not bork when when a no\-argument method is missing$/ do
   begin
     @my_mock.method_missing :not_mocked
   rescue NoMethodError
-    fail "method_missing thinks that it should raise NoMethodError for a non-existent method..  :("
+    fail "method_missing thinks that it should raise NoMethodError for a non-existent method..  :(\n (Tip: method_missing is a method defined on all objects.  Try overriding it.)"
   end
 end
 
@@ -52,7 +65,7 @@ Then /^it should still bork when a method with arguments is missing$/ do
     raise Exception.new
   rescue NoMethodError
   rescue
-    fail "method_missing did not raise a NoMethodError when trying to call with the arguments ':not_mocked, 1, 2, 3'\n   -> clue 1\n"
+    fail "method_missing did not raise a NoMethodError when trying to call with the arguments ':not_mocked, 1, 2, 3'\n   -> Tip: you can delegate to the super class implementation of a method using 'super', and no arguments are necessary\n"
   end
 
 end
