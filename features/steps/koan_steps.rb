@@ -52,7 +52,7 @@ Then /^it should tell you that a method has not been called, if you ask$/ do
   end
 end
 
-Then /^it should not bork when when a no\-argument method is missing$/ do
+Then /^it should not bork when a no\-argument method is missing$/ do
   begin
     @my_mock.method_missing :not_mocked
   rescue NoMethodError
@@ -128,11 +128,27 @@ Then /^it should return the correct call count for two different methods$/ do
 end
 
 Then /^it should let you set an expected return value$/ do
-  @my_mock.returns(1)
+  if @my_mock.methods.include?('returns')
+    begin
+      @my_mock.returns(1)
+    rescue ArgumentError
+      fail "MyMock should define returns() with a parameter that will be the return value."
+    end
+  else
+    fail "MyMock should define returns() with a parameter that will be the return value."
+  end
 end
 
 Then /^it should let you specify a method name that a return value will be used for$/ do
-  @my_mock.from(:mock_method)
+  if @my_mock.methods.include?('from')
+    begin
+      @my_mock.from(:the_method)
+    rescue ArgumentError
+      fail "MyMock should define from() with a parameter that will be the method name returning the value."
+    end
+  else
+    fail "MyMock should define from() with a parameter that will be the method name returning the value."
+  end
 end
 
 Then /^it should let you set up return values in the style of a fluent thing$/ do
@@ -144,10 +160,15 @@ Then /^it should let you set up return values in the style of a fluent thing$/ d
 end
 
 Then /^it should return the expected string from a mock method call$/ do
-  expected_result = "You're mockin' now!"
+  expected_result = "You're stubbin' now!"
   @my_mock.returns(expected_result).from(:mock_method)
   result = @my_mock.mock_method
-  result.should be_eql("You're mockin' now!"), "The mock method should have returned \"You're mockin' now!\" but returned #{result}.\n   -> clue 2\n"
+  fail_message = <<MSG
+The mock method should have returned "You're mockin' now!" but returned #{result}.
+   -> If "#{expected_result}" has been set as the return value, then
+      that value should be returned when the method is invoked.
+MSG
+  result.should be_eql("You're stubbin' now!"), fail_message
 end
 
 Then /^it should be able to set any object as the return value from a mock method call$/ do
@@ -157,11 +178,19 @@ Then /^it should be able to set any object as the return value from a mock metho
   result.should equal(expected_result), "Mock method should have returned the expected Object reference, but returned #{result} as a #{result.class} instead."
 end
 
+Then /^it should return the value set for a particular method/ do
+  first_result = "You're stubbin' now!"
+  second_result = "You're stubbin' now!"
+  @my_mock.returns(first_result).from :stubbed_first
+  @my_mock.returns(second_result).from :stubbed_second
+  @my_mock.stubbed_first.should equal(first_result), "first_result was set up to first, to return \"You're stubbin' now!\", but it's returning the result from a method that has been stubbed after.\n   -> Tip: Have you set the return value for a particular method name, or all method calls?"
+end
+
 Then /^it should only set the return value for one method expectation$/ do
-  expected_result = "You're mockin' now!"
+  expected_result = "You're stubbin' now!"
   @my_mock.returns(expected_result).from :with_result
   @my_mock.from :without_result
-  @my_mock.without_result.should be_nil, "only with_result was set up to return [You're mockin' now!], but without_result is also returning this."
+  @my_mock.without_result.should be_nil, "with_result was set up to return \"You're stubbin' now!\", but without_result was not stubbed and is returning \"You're stubbin' now!\".\n   -> Tip: Have you set the return value for a particular method name, or all method calls?"
 end
 
 Then /^it should only define the result on the specific mock instance$/ do

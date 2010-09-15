@@ -10,7 +10,7 @@ Scenario: You want to build something that mocks
     And MyMock can check if any method has been called
     And the method that you want to check is given
     Then it should tell you that a method has not been called, if you ask
-    And it should not bork when when a no-argument method is missing
+    And it should not bork when a no-argument method is missing
     And it should still bork when a method with one argument is missing
     And it should not complain when asked if a method has been called and the method has been invoked
     And it should store all of the methods that have been called
@@ -29,6 +29,7 @@ Scenario: You want to build something that stubs
     And it should return the expected string from a mock method call
     And it should be able to set any object as the return value from a mock method call
     And it should return nil from missing_method when no expectations have been set on a method
+    And it should return the value set for a particular method
     And it should only set the return value for one method expectation
     And it should only define the result on the specific mock instance
 
