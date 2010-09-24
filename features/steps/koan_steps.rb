@@ -165,8 +165,8 @@ Then /^it should return the expected string from a mock method call$/ do
   result = @my_mock.mock_method
   fail_message = <<MSG
 The mock method should have returned "You're mockin' now!" but returned #{result}.
-   -> If "#{expected_result}" has been set as the return value, then
-      that value should be returned when the method is invoked.
+   -> If "#{expected_result}" has been set as the return value in #return, then
+      that value should be returned when the method specified in #from is invoked.
 MSG
   result.should be_eql("You're stubbin' now!"), fail_message
 end
@@ -180,10 +180,14 @@ end
 
 Then /^it should return the value set for a particular method/ do
   first_result = "You're stubbin' now!"
-  second_result = "You're stubbin' now!"
+  second_result = "You're stubbin' again!"
   @my_mock.returns(first_result).from :stubbed_first
   @my_mock.returns(second_result).from :stubbed_second
-  @my_mock.stubbed_first.should equal(first_result), "first_result was set up to first, to return \"You're stubbin' now!\", but it's returning the result from a method that has been stubbed after.\n   -> Tip: Have you set the return value for a particular method name, or all method calls?"
+  fail_message = <<MSG
+The method first_result was set up to return \"#{first_result}\", but it's returning the result from a method that has been stubbed subsequently.
+   -> Tip: Does your stub implementation set the return value for a particular method name, or for all method calls?
+MSG
+  @my_mock.stubbed_first.should equal(first_result), fail_message
 end
 
 Then /^it should only set the return value for one method expectation$/ do
