@@ -194,7 +194,11 @@ Then /^it should only set the return value for one method expectation$/ do
   expected_result = "You're stubbin' now!"
   @my_mock.returns(expected_result).from :with_result
   @my_mock.from :without_result
-  @my_mock.without_result.should be_nil, "with_result was set up to return \"You're stubbin' now!\", but without_result was not stubbed and is returning \"You're stubbin' now!\".\n   -> Tip: Have you set the return value for a particular method name, or all method calls?"
+  fail_message = <<MSG
+The method without_result was not stubbed and is returning \"You're stubbin' now!\", which was set previously on the method with_result.
+   -> Tip: Does your stub implementation keep hold of a return value, even after it has been used?
+MSG
+  @my_mock.without_result.should be_nil, fail_message
 end
 
 Then /^it should only define the result on the specific mock instance$/ do
@@ -208,7 +212,7 @@ end
 Then /^it should still track that a method with a defined return value was called$/ do
   @my_mock.returns("You're mockin now!").from(:once_with_result)
   @my_mock.once_with_result
-  expect_no_not_called_error("NotCalled should not have been raised, as once_with_result was both defined with a return value and called.") do
+  expect_no_not_called_error("NotCalled should not have been raised, as the method once_with_result has been set up with a return value and also involed on the stub / mock.") do
     @my_mock.called? :once_with_result
   end
 end
@@ -217,7 +221,7 @@ Then /^it should still track the number of times that a method with a defined re
   @my_mock.returns("You're mockin now!").from(:three_times_with_result)
   3.times { @my_mock.three_times_with_result }
   count = @my_mock.called? :three_times_with_result
-  count.should equal(3), "three_times_with_result has a return value defined and was called 3 times not #{count.nil?? 'nil' : count} times."
+  count.should equal(3), "The method three_times_with_result has a return value defined and was called 3 times not #{count.nil?? 'nil' : count} times."
 end
 
 Then /^it should always return the expected return value$/ do
