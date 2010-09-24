@@ -277,5 +277,5 @@ Then /^it should always return the same value for "([^"]*)"$/ do |the_parameter|
   @my_mock.repeat_argument(the_parameter)
   @my_mock.repeat_argument(the_parameter)
   call_count = @my_mock.called?(:repeat_argument, :with => the_parameter)
-  call_count.should equal(3), "The method repeat_argument was called three times with '#{the_parameter}, but MyMock thinks that it has been called #{call_count} times."
+  call_count.should equal(3), "The method repeat_argument was called three times with '#{the_parameter}', but MyMock thinks that it has been called #{call_count} times."
 end
