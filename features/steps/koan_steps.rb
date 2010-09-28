@@ -53,16 +53,22 @@ Then /^it should tell you that a method has not been called, if you ask$/ do
 end
 
 Then /^it should not bork when a no\-argument method is missing$/ do
+  message = "method_missing thinks that it should raise NoMethodError for a non-existent method..  :("
+  tip = "method_missing(method_name, *args) is a method defined on all objects.  Try overriding it."
   begin
     @my_mock.method_missing :not_mocked
   rescue NoMethodError
-    fail display("method_missing thinks that it should raise NoMethodError for a non-existent method..  :(", "method_missing(method_name, *args) is a method defined on all objects.  Try overriding it.)")
+    fail display(message, tip)
   end
 end
 
 Then /^it should still bork when a method with one argument is missing$/ do
   message = "method_missing did not raise a NoMethodError when trying to call with the arguments (:not_mocked, 1)"
-  tip = "you can delegate to the super class implementation of a method using 'super' without arguments\n"
+  tip = <<TIP
+First, the parameter *args is an array of arbitrary lenth.
+           Second, you can delegate to the object implementation of method_missing by calling
+           'super' (You don't even need to explicitly pass the arguments through to super!)
+TIP
   begin
     @my_mock.method_missing :not_mocked, 1
     fail display(message, tip)
@@ -77,13 +83,21 @@ Then /^it should return nil from missing_method when no expectations have been s
 end
 
 Then /^it should not complain when asked if a method has been called and the method has been invoked$/ do
+  message = "A NotCalled error should not be raised; the method was invoked on the mock instance!"
+  tip = "Let called? know that a missing method was called on the mock."
   @my_mock.mock_method
-  expect_no_not_called_error("A NotCalled error should not be raised; the method was invoked on the mock instance!", "Let called? know that a non-existent method was called.") do
+  expect_no_not_called_error(message, tip) do
     @my_mock.called?(:mock_method)
   end
 end
 
 Then /^it should store all of the methods that have been called$/ do
+  message = "A NotCalled error should not have been raised for first_method.  first_method was called on the\nmock just before second_method was."
+  tip = <<TIP
+You are tracking the last method called on the mock, but need to be tracking *every* 
+           method called on the mock
+TIP
+  
   @my_mock.first_method
   @my_mock.second_method
 
@@ -92,7 +106,7 @@ Then /^it should store all of the methods that have been called$/ do
   rescue NotCalled
   end
 
-  expect_no_not_called_error("A NotCalled error should not have been raised for first_method.  first_method was called on the mock just before second_method was.") do
+  expect_no_not_called_error(message, tip) do
     @my_mock.called?(:first_method)
   end
 end
@@ -105,17 +119,33 @@ Then /^it should only indicate that a particular method has been called$/ do
 end
 
 Then /^it should track method calls within individual mock instances$/ do
-  @my_mock.instance_method
+  my_mock = MyMock.new
+  my_mock.instance_method
   another_mock = MyMock.new
+  another_mock.different_method
   expect_not_called_error("instance_method was called on one instance of MyMock, but not another instance.", "Method calls should only be tracked as instance variables.") do
     another_mock.called?(:instance_method)
+  end
+  expect_no_not_called_error("A MyMock instance seems to have lost track of a method that was called on it...", "Why has creating a new instance of MyMock wiped out the methods called on a previous\n           instance?") do
+    my_mock.called?(:instance_method)
   end
 end
 
 Then /^it should return the number of times that a method has been invoked from called\?$/ do
+  tip = <<TIP
+If your tracking every method call made on the mock, can you count the calls for a
+           particular method name?
+TIP
+
   3.times { @my_mock.three_times }
   result = @my_mock.called?(:three_times)
-  result.should equal(3), "called? should be returning the number of times that the method was called on the mock; 'three_times' was called 3 times, not #{result.nil?? 'nil' : result} times"
+
+  message = <<MESSAGE
+called? should be returning the number of times that the method was called on the mock;
+'three_times' was called 3 times, not #{result.nil?? 'nil' : result} times"
+MESSAGE
+
+  result.should equal(3), display(message, tip)
 end
 
 Then /^it should return the correct call count for two different methods$/ do
