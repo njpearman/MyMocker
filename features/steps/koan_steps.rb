@@ -212,7 +212,7 @@ TIP
   begin
     @my_mock.returns(1).from(:mock_method)
   rescue
-    fail 
+    fail koan_fail_message message, tip
   end
 end
 
