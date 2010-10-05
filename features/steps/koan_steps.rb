@@ -73,7 +73,7 @@ end
 Then /^it should still bork when a method with one argument is missing$/ do
   message = <<MESSAGE
 method_missing did not raise a NoMethodError when trying to call with the arguments
-(:not_a_real_method, 'first_argument')
+(:not_a_real_method, 'first_argument', 'second_argument')
 MESSAGE
 
   tip = <<TIP
@@ -82,7 +82,7 @@ First, the parameter *args is an array of arbitrary lenth.
            'super' (You don't even need to explicitly pass the arguments through to super!)
 TIP
   begin
-    @my_mock.method_missing :not_a_real_method, 'first_argument'
+    @my_mock.method_missing :not_a_real_method, 'first_argument', 'second_argument'
     fail koan_fail_message(message, tip)
   rescue NoMethodError
   rescue
@@ -304,14 +304,24 @@ Then /^it should stub "([^"]*)" as an argument$/ do |the_parameter|
   expect_no_not_called_error("The method single_argument was called with '#{the_parameter}'") { @my_mock.called? :single_argument }
 end
 
-Then /^it should know when a method has unexpectedly been called with an argument$/ do
+Then /^it should let you specify an expected argument$/ do
+  begin
+    @my_mock.called? :with_an_argument, :with => 'smackdown'
+  rescue ArgumentError => e
+    fail "called? doesn't seem to be accepting the hash ':with => expected_parameter' as a second method parameter.\n -> #{e.message}"
+  rescue NotCalled
+  end
+end
+
+Then /^it should know whether a method has been called with an argument or not$/ do
+  message = "with_an_argument was not called with the parameter 'smackdown', but MyMock thinks that it was..."
+  tip = <<TIP
+method_missing let's you inspect the arguments that were passed to a method that
+           doesn't exist.  This can help you match the expected arguments you pass to called?"
+TIP
   @my_mock.with_an_argument
-  expect_not_called_error("with_an_argument was not called with 'smackdown'") do
-    begin
-      @my_mock.called? :with_an_argument, :with => 'smackdown'
-    rescue ArgumentError => e
-      fail "called? doesn't seem to be accepting the hash ':with => expected_parameter' as a second method parameter.\n -> #{e.message}"
-    end
+  expect_not_called_error(message, tip) do
+    @my_mock.called? :with_an_argument, :with => 'smackdown'
   end
 end
 

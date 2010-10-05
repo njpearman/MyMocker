@@ -49,7 +49,8 @@ Scenario: You want to make an argument about things
     When you have been bored by the triviality of the previous koans
     And a new MyMock instance is created
     Then it should stub "giggidy" as an argument
-    And it should know when a method has unexpectedly been called with an argument
+    And it should let you specify an expected argument
+    And it should know whether a method has been called with an argument or not
     And it should let you mock a return value with "giggidy" as an argument
     And it should not set that expectation on "thundercats"
     And it should always return the same value for "giggidy"

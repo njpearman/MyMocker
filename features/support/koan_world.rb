@@ -14,12 +14,12 @@ class ProgressTracker
     progress = (@success_count / NumberOfSteps) * 100
 
     message = "\nKoan progress currently stands at #{("%.2f" % progress)}%\n"
-    if @success_count == NumberOfSteps
-      message << "You are truly enlightened.  Try running rake cukoan:all to see everything fly."
+    if @success_count >= NumberOfSteps
+      message << "You are truly enlightened.  Try running #{ExampleCommand} to see everything fly."
     elsif progress > 9
-      message << "You are well on the way to enlightenment.  Try running rake cukoan:all to see more things fly."
+      message << "You are well on the way to enlightenment.  Try running #{ExampleCommand} to see more things fly."
     elsif progress > 5
-      message << "You are moving towards enlightenment.  Try running rake cukoan:all to see something fly."
+      message << "You are moving towards enlightenment.  Try running #{ExampleCommand} to see something fly."
     else
       message << "Through hard work and application, you shall achieve enlightenment."
     end
@@ -27,7 +27,8 @@ class ProgressTracker
   end
 
   private
-  NumberOfSteps = 38.0
+  ExampleCommand = 'rake cukoan:examples'
+  NumberOfSteps = 40.0
 end
 
 class FailureMessage
@@ -82,7 +83,6 @@ end
 
 class KoanWorld
   def self.populate world
-
     world.Before('@koan') {|scenario| scenario.skip_invoke! unless run_next_koan? }
     world.AfterStep('@koan') {|scenario| add_a_test_pass }
     world.After('@koan') {|scenario| stop_koans if(run_next_koan? && scenario.failed?) }
