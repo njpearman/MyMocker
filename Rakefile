@@ -63,11 +63,6 @@ begin
       t.fork = false # You may get faster startup if you set this to false
       t.profile = 'examples'
     end
-
-    Cucumber::Rake::Task.new(:all, 'Run the koan and then the features that test the stuff that you have created') do |t|
-      t.fork = false # You may get faster startup if you set this to false
-      t.profile = 'all'
-    end
   end
   desc 'Alias for cukoan:enlightenment'
   task :cukoan => 'cukoan:enlightenment'
