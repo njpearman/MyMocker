@@ -1,6 +1,6 @@
 Given /^the file for the mocker exists$/ do
   sample_solution_path = File.join(File.expand_path(File.dirname(__FILE__)), '..', '..', 'lib', 'my_mock.rb')
-  File.exists?(sample_solution_path).should be_true, display("Please create lib/my_mock.rb to get things under way.")
+  File.exists?(sample_solution_path).should be_true, koan_fail_message("Please create lib/my_mock.rb to get things under way.")
 end
 
 Given /^the koan is complete$/ do
@@ -20,12 +20,12 @@ Given /^you are pretty darn good at this shizzle$/ do
 end
 
 When /^a new MyMock instance is created$/ do
-  defined?(MyMock).should be_true, display("MyMock hasn't been defined as a class.  Put it in the my_mock.rb file.")
+  defined?(MyMock).should be_true, koan_fail_message("MyMock hasn't been defined as a class.  Put it in the my_mock.rb file.")
   @my_mock = MyMock.new
 end
 
 When /^MyMock can check if any method has been called$/ do
-  MyMock.instance_methods.include?('called?').should be_true, display("called? is not defined as a method on MyMock.","method names can end with a question mark in Ruby.")
+  MyMock.instance_methods.include?('called?').should be_true, koan_fail_message("called? is not defined as a method on MyMock.","method names can end with a question mark in Ruby.")
 end
 
 When /^the method that you want to check is given$/ do
@@ -33,7 +33,7 @@ When /^the method that you want to check is given$/ do
     MyMock.new.called? :a_method
   rescue NotCalled
   rescue Exception
-    fail display("called? needs to be able to accept a method name as a parameter.")
+    fail koan_fail_message("called? needs to be able to accept a method name as a parameter.")
   end
 end
 
@@ -47,7 +47,15 @@ When /^you have been bored by the triviality of the previous koans$/ do
 end
 
 Then /^it should tell you that a method has not been called, if you ask$/ do
-  expect_not_called_error("called? should have raised a NotCalled error, as the tested method name was not invoked on MyMock....") do
+  message = <<MESSAGE
+called? should have raised a NotCalled error, as the tested method name was not invoked on
+MyMock....
+MESSAGE
+  tip = <<TIP
+NotCalled has already been defined for you, and you can raise errors using
+           raise(YourException.new)"
+TIP
+  expect_not_called_error(message, tip) do
     @my_mock.called?(:jump)
   end
 end
@@ -58,23 +66,27 @@ Then /^it should not bork when a no\-argument method is missing$/ do
   begin
     @my_mock.method_missing :not_mocked
   rescue NoMethodError
-    fail display(message, tip)
+    fail koan_fail_message(message, tip)
   end
 end
 
 Then /^it should still bork when a method with one argument is missing$/ do
-  message = "method_missing did not raise a NoMethodError when trying to call with the arguments (:not_mocked, 1)"
+  message = <<MESSAGE
+method_missing did not raise a NoMethodError when trying to call with the arguments
+(:not_a_real_method, 'first_argument')
+MESSAGE
+
   tip = <<TIP
 First, the parameter *args is an array of arbitrary lenth.
            Second, you can delegate to the object implementation of method_missing by calling
            'super' (You don't even need to explicitly pass the arguments through to super!)
 TIP
   begin
-    @my_mock.method_missing :not_mocked, 1
-    fail display(message, tip)
+    @my_mock.method_missing :not_a_real_method, 'first_argument'
+    fail koan_fail_message(message, tip)
   rescue NoMethodError
   rescue
-    fail display(message, tip)
+    fail koan_fail_message(message, tip)
   end
 end
 
@@ -84,7 +96,10 @@ end
 
 Then /^it should not complain when asked if a method has been called and the method has been invoked$/ do
   message = "A NotCalled error should not be raised; the method was invoked on the mock instance!"
-  tip = "Let called? know that a missing method was called on the mock."
+  tip = <<TIP
+@variable_name is used to declare instance variables.  Use that to let called? know
+           that a missing method was called on the mock."
+TIP
   @my_mock.mock_method
   expect_no_not_called_error(message, tip) do
     @my_mock.called?(:mock_method)
@@ -112,8 +127,15 @@ TIP
 end
 
 Then /^it should only indicate that a particular method has been called$/ do
+  message = <<MESSAGE
+You asked whether different_method was called; it was not, but particular_method was.
+MESSAGE
+  tip = <<TIP
+Try recording the name of each method that is caught in method_missing so that it
+           can be used by called?.
+TIP
   @my_mock.particular_method
-  expect_not_called_error("You asked whether different_method was called; it was not, but particular_method was.", "Try recording the name of each method that is caught in method_missing") do
+  expect_not_called_error(message, tip) do
     @my_mock.called?(:different_method)
   end
 end
@@ -133,8 +155,8 @@ end
 
 Then /^it should return the number of times that a method has been invoked from called\?$/ do
   tip = <<TIP
-If your tracking every method call made on the mock, can you count the calls for a
-           particular method name?
+If you are tracking every method call made on the mock, can you count the calls for 
+           a particular method name?
 TIP
 
   3.times { @my_mock.three_times }
@@ -145,7 +167,7 @@ called? should be returning the number of times that the method was called on th
 'three_times' was called 3 times, not #{result.nil?? 'nil' : result} times"
 MESSAGE
 
-  result.should equal(3), display(message, tip)
+  result.should equal(3), koan_fail_message(message, tip)
 end
 
 Then /^it should return the correct call count for two different methods$/ do

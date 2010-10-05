@@ -1,2 +1,3 @@
 default: --format KoanFormatter --strict --tags @koan
-all: --format KoanFormatter --strict
+all: --format KoanFor matter --strict
+examples: --strict --tags ~@koan

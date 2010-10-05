@@ -1,8 +1,3 @@
-# 
-# To change this template, choose Tools | Templates
-# and open the template in the editor.
- 
-
 require 'rubygems'
 require 'rake'
 require 'rake/clean'
@@ -62,6 +57,11 @@ begin
     Cucumber::Rake::Task.new(:enlightenment, 'Runs the koan') do |t|
       t.fork = false # You may get faster startup if you set this to false
       t.profile = 'default'
+    end
+
+    Cucumber::Rake::Task.new(:examples, 'Run the examples to see whether your mocker works') do |t|
+      t.fork = false # You may get faster startup if you set this to false
+      t.profile = 'examples'
     end
 
     Cucumber::Rake::Task.new(:all, 'Run the koan and then the features that test the stuff that you have created') do |t|

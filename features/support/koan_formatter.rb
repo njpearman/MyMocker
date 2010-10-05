@@ -1,10 +1,6 @@
 require 'cucumber/formatter/pretty'
 
 class KoanFormatter < Cucumber::Formatter::Pretty
-  def koan_failed?
-    @koan_failed
-  end
-
   def scenario_name(keyword, name, file_colon_line, source_indent)
     super
     @koan_failed = @koan_skipped = false

@@ -11,7 +11,7 @@ class ProgressTracker
 
   def self.progress_message
     @success_count ||= 0
-    progress = @success_count
+    progress = (@success_count / NumberOfSteps) * 100
 
     message = "\nKoan progress currently stands at #{("%.2f" % progress)}%\n"
     if @success_count == NumberOfSteps
@@ -36,20 +36,20 @@ class FailureMessage
   end
   
   def to_s
-    return @message + "\n   -> Tip: " + @tip if @tip
+    return "#{@message}\n   -> Tip: #{@tip}" if @tip
     return @message
   end
 end
 
 module KoanProgress
-  @@run_next = true
+  @@run_next_koan = true
 
-  def run_next?
-    @@run_next
+  def run_next_koan?
+    @@run_next_koan
   end
 
   def stop_koans
-    @@run_next = false
+    @@run_next_koan = false
   end
 
   [:add_a_test_pass, :current_progress].each do |method_name|
@@ -61,7 +61,7 @@ module KoanExpectations
   def expect_not_called_error failure_message, tip=nil
     begin
       yield
-      fail display(failure_message, tip)
+      fail koan_fail_message(failure_message, tip)
     rescue NotCalled
       # all good
     end
@@ -71,26 +71,22 @@ module KoanExpectations
     begin
       yield
     rescue NotCalled
-      fail display(failure_message, tip)
+      fail koan_fail_message(failure_message, tip)
     end
   end
 
-  def display message, tip=nil
+  def koan_fail_message message, tip=nil
     FailureMessage.new(message, tip).to_s
   end
 end
 
 class KoanWorld
   def self.populate world
-    world.Before('@koan') do |scenario|
-      scenario.skip_invoke! unless run_next?
-    end
-    
-    world.After('@koan') do |scenario|
-      stop_koans if run_next? && scenario.failed?
-    end
 
+    world.Before('@koan') {|scenario| scenario.skip_invoke! unless run_next_koan? }
     world.AfterStep('@koan') {|scenario| add_a_test_pass }
+    world.After('@koan') {|scenario| stop_koans if(run_next_koan? && scenario.failed?) }
+
     world.World(KoanExpectations)
     world.World(KoanProgress)
   end
