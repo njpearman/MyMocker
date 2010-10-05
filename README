@@ -3,14 +3,20 @@
 MyMocker contains a koan built with Cucumber and some customised formatting that
 goes about stepping you through the process of creating a mocking class.
 
-At the moment, the mocking class can only mock no-argument methods.
+Start by running rake or cucumber from the project root and see how you go!
 
-At certain stages through the koan, you get prompted to run the usage features,
+At the moment, the class can only mock or stub no-argument methods or methods with 
+only one argument.
+
+At certain stages through the koan, you get prompted to run the example features,
 which actually use the class that you have built in "real world" (contrived..?)
-situations.
+situations.  The command is:
+    rake cukoan:examples
 
 === The aim of the game
-The goal is to show a simple use of the method_missing paradigm in Ruby, and
-demonstrate the difference between mocks and stubs.
+The goal is to show a simple but powerful use of the method_missing paradigm in 
+Ruby, and demonstrate the difference between mocks and stubs.
 
-A bonus goal is to do it in the smallest amount of code possible.
+A bonus goal is to do it in the smallest amount of code possible.  I've done it
+in twenty eight lines with sensible whitespace and logic per line, so that is 
+the bar.
