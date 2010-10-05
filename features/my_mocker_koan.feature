@@ -55,20 +55,17 @@ Scenario: You want to make an argument about things
     And it should always return the same value for "giggidy"
 
 Scenario: Using MyMock to check for an expected dependency call
-    Given you have completed 5 steps in the koan
-    And I have a mocked slice of bread
+    Given I have a mocked slice of bread
     When I put the bread into a toaster
     Then the bread should be toasted
 
 Scenario: Using MyMock to check for a number of dependency calls
-    Given you have completed 9 steps in the koan
-    And I have a mocked nail
+    Given I have a mocked nail
     When I hit the nail with a hammer 3 times
     Then the nail should have been hit 3 times
 
 Scenario: Using MyMock to check for expected dependency interactions
-    Given you have completed all steps in the koan
-    And I have a toaster
+    Given I have a toaster
     And the toaster blends
     When I put the toaster in a blender
     Then it should tell me that it blends

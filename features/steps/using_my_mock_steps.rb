@@ -1,7 +1,3 @@
-Given /^you have completed (?:all|(\d+)) steps in the koan$/ do |required_completion|
-  #pending("You need to complete more of the Koan to get this running") if current_progress < required_completion.to_i
-end
-
 Given /^I have a mocked slice of bread$/ do
   @slice_of_bread = MyMock.new
 end
