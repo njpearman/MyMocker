@@ -98,7 +98,7 @@ Then /^it should not complain when asked if a method has been called and the met
   message = "A NotCalled error should not be raised; the method was invoked on the mock instance!"
   tip = <<TIP
 @variable_name is used to declare instance variables.  Use that to let called? know
-           that a missing method was called on the mock."
+           that a missing method was called on the mock.
 TIP
   @my_mock.mock_method
   expect_no_not_called_error(message, tip) do
@@ -204,10 +204,15 @@ Then /^it should let you specify a method name that a return value will be used 
 end
 
 Then /^it should let you set up return values in the style of a fluent thing$/ do
+  message = "MyMock can't chain a from() call to a return() call e.g. my_mock.return(101).from('my_method')."
+  tip = <<TIP
+If you return self from a method, then chaining another call directly off of the method
+           is not really breaking the law of demeter.
+TIP
   begin
     @my_mock.returns(1).from(:mock_method)
   rescue
-    fail "MyMock can't chain a from() call to a return() call e.g. my_mock.return(101).from('my_method')."
+    fail 
   end
 end
 
