@@ -16,9 +16,9 @@ class ProgressTracker
     message = "\nKoan progress currently stands at #{("%.2f" % progress)}%\n"
     if @success_count >= NumberOfSteps
       message << "You are truly enlightened.  Try running #{ExampleCommand} to see everything fly."
-    elsif progress > 9
+    elsif @success_count > 13
       message << "You are well on the way to enlightenment.  Try running #{ExampleCommand} to see more things fly."
-    elsif progress > 5
+    elsif @success_count > 10
       message << "You are moving towards enlightenment.  Try running #{ExampleCommand} to see something fly."
     else
       message << "Through hard work and application, you shall achieve enlightenment."
