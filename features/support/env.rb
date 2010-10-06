@@ -11,5 +11,5 @@ require File.join(current_path, 'koan_world.rb')
 # use this stuff.
 class NotCalled < Exception; end
 
-# populate the cucumber world with the Koan landscape
+# decorate the cucumber world with the Koan landscape
 KoanWorld.populate(self)
