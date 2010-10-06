@@ -3,7 +3,7 @@ Given /^you have already built something that mocks$/ do
 end
 
 Then /^it should let you set an expected return value$/ do
-  if @my_mock.methods.include?('returns')
+  if @my_mock.methods.map{|m| m.to_s}.include?('returns')
     begin
       @my_mock.returns(1)
     rescue ArgumentError
@@ -15,7 +15,7 @@ Then /^it should let you set an expected return value$/ do
 end
 
 Then /^it should let you specify a method name that a return value will be used for$/ do
-  if @my_mock.methods.include?('from')
+  if @my_mock.methods.map{|m| m.to_s}.include?('from')
     begin
       @my_mock.from(:the_method)
     rescue ArgumentError

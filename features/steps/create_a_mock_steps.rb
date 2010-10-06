@@ -4,7 +4,7 @@ Given /^the file for the mocker exists$/ do
 end
 
 When /^MyMock can check if any method has been called$/ do
-  MyMock.instance_methods.include?('called?').should be_true, koan_fail_message("called? is not defined as a method on MyMock.","method names can end with a question mark in Ruby.")
+  MyMock.instance_methods.map{|m| m.to_s}.include?('called?').should be_true, koan_fail_message("called? is not defined as a method on MyMock.","method names can end with a question mark in Ruby.")
 end
 
 When /^the method that you want to check is given$/ do
