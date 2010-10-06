@@ -3,7 +3,7 @@ Given /^I have a mocked slice of bread$/ do
 end
 
 When /^I put the bread into a toaster$/ do
-  Toaster.new.add(@slice_of_bread).press_switch
+  Examples::Toaster.new.add(@slice_of_bread).press_switch
 end
 
 Then /^the bread should be toasted$/ do
@@ -15,7 +15,7 @@ Given /^I have a mocked nail$/ do
 end
 
 When /^I hit the nail with a hammer (\d+) times$/ do |hit_count|
-  @hammer = Hammer.new
+  @hammer = Examples::Hammer.new
   hit_count.to_i.times { @hammer.hit(@nail) }
 end
 
@@ -32,7 +32,7 @@ Given /^the toaster blends$/ do
 end
 
 When /^I put the toaster in a blender$/ do
-  @does_it_blend = Blender.new.blend(@toaster)
+  @does_it_blend = Examples::Blender.new.blend(@toaster)
 end
 
 Then /^it should tell me that it blends$/ do
