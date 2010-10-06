@@ -4,14 +4,13 @@ require 'rake/clean'
 require 'rake/gempackagetask'
 require 'rake/rdoctask'
 require 'rake/testtask'
-require 'spec/rake/spectask'
 
 spec = Gem::Specification.new do |s|
-  s.name = 'MyMockr'
+  s.name = 'MyMocker'
   s.version = '0.0.1'
   s.has_rdoc = true
   s.extra_rdoc_files = ['README', 'LICENSE']
-  s.summary = 'Your summary here'
+  s.summary = 'MyMocker presents a set of koans in Ruby to build your own simple mocking tool.'
   s.description = s.summary
   s.author = ''
   s.email = ''
@@ -40,15 +39,15 @@ Rake::TestTask.new do |t|
   t.test_files = FileList['test/**/*.rb']
 end
 
-Spec::Rake::SpecTask.new do |t|
-  t.spec_files = FileList['spec/**/*.rb']
-  t.libs << Dir["lib"]
-end
+#Spec::Rake::SpecTask.new do |t|
+#  t.spec_files = FileList['spec/**/*.rb']
+#  t.libs << Dir["lib"]
+#end
 
-Spec::Rake::SpecTask.new(:koans) do |t|
-  t.spec_files = FileList['koans/**/*.rb']
-  t.libs << Dir["lib"]
-end
+#Spec::Rake::SpecTask.new(:koans) do |t|
+#  t.spec_files = FileList['koans/**/*.rb']
+#  t.libs << Dir["lib"]
+#end
 
 begin
   require 'cucumber/rake/task'
