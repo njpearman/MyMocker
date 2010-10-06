@@ -1,16 +1,15 @@
 class ProgressTracker
+  @success_count = 0
+
   def self.add_a_test_pass
-    @success_count ||= 0
     @success_count += 1
   end
 
   def self.current_progress
-    @success_count ||= 0
     (@success_count / NumberOfSteps) * 100
   end
 
   def self.progress_message
-    @success_count ||= 0
     progress = (@success_count / NumberOfSteps) * 100
 
     message = "\nKoan progress currently stands at #{("%.2f" % progress)}%\n"
