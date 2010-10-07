@@ -7,7 +7,17 @@ When /^you have been bored by the triviality of the previous koans$/ do
 end
 
 Then /^it should stub "([^"]*)" as an argument$/ do |the_parameter|
-  @my_mock.single_argument(the_parameter)
+  message = "method_missing should not be raising a NoMethodError for a call with one argument"
+  tip = <<TIP
+Look at how many arguments are being handled by your method_missing 
+           override.
+TIP
+  begin
+    @my_mock.single_argument(the_parameter)
+  rescue NoMethodError
+    fail koan_fail_message message, tip
+  end
+
   expect_no_not_called_error("The method single_argument was called with '#{the_parameter}'") { @my_mock.called? :single_argument }
 end
 
