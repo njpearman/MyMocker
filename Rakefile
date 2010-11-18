@@ -4,6 +4,8 @@ require 'rake/clean'
 require 'rake/gempackagetask'
 require 'rake/rdoctask'
 require 'rake/testtask'
+require 'cucumber'
+require 'cucumber/rake/task'
 
 spec = Gem::Specification.new do |s|
   s.name = 'MyMocker'
@@ -50,7 +52,6 @@ end
 #end
 
 begin
-  require 'cucumber/rake/task'
 
   namespace :cukoan do
     Cucumber::Rake::Task.new(:enlightenment, 'Runs the koan') do |t|

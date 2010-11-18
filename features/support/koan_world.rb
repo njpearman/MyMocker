@@ -5,9 +5,9 @@ class ProgressTracker
     @success_count += 1
   end
 
-  def self.current_progress
-    (@success_count / NumberOfSteps) * 100
-  end
+#  def self.current_progress
+#    (@success_count / NumberOfSteps) * 100
+#  end
 
   def self.progress_message
     progress = (@success_count / NumberOfSteps) * 100
@@ -52,7 +52,8 @@ module KoanProgress
     @@run_next_koan = false
   end
 
-  [:add_a_test_pass, :current_progress].each do |method_name|
+  #[:add_a_test_pass, :current_progress].each do |method_name|
+  [:add_a_test_pass].each do |method_name|
     define_method(method_name) { ProgressTracker.send method_name }
   end
 end
