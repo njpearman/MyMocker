@@ -5,10 +5,6 @@ class ProgressTracker
     @success_count += 1
   end
 
-#  def self.current_progress
-#    (@success_count / NumberOfSteps) * 100
-#  end
-
   def self.progress_message
     progress = (@success_count / NumberOfSteps) * 100
 
