@@ -48,9 +48,8 @@ module KoanProgress
     @@run_next_koan = false
   end
 
-  #[:add_a_test_pass, :current_progress].each do |method_name|
-  [:add_a_test_pass].each do |method_name|
-    define_method(method_name) { ProgressTracker.send method_name }
+  def add_a_test_pass
+    ProgressTracker.add_a_test_pass
   end
 end
 
