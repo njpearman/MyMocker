@@ -36,9 +36,10 @@ Then /^it should know whether a method has been called with an argument or not$/
 method_missing let's you inspect the arguments that were passed to a method that
            doesn't exist.  This can help you match the expected arguments you pass to called?"
 TIP
-  @my_mock.with_an_argument
+  my_mock = MyMock.new
+  my_mock.with_an_argument
   expect_not_called_error(message, tip) do
-    @my_mock.called? :with_an_argument, :with => 'smackdown'
+    my_mock.called? :with_an_argument, :with => 'smackdown'
   end
 end
 
